@@ -6,8 +6,10 @@ Author: Thiago Guerrera Martins
 Maintainer: Thiago Guerrera Martins <thigm85@gmail.com>
 Description: Wrap functions for multi-class classification
 License: Whatever
-Depends: VGAM
-Suggests: testthat
-Imports: methods
+Depends:
+    VGAM
+Suggests:
+    testthat
+Imports:
+    methods
 LazyLoad: yes
-Collate: vgam.R
