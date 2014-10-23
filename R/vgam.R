@@ -23,7 +23,22 @@
 #' this object.     
 #' 
 #' @examples
+#' data(soccer_game)
+#' indexes <- generateTestIndexes(dataset = soccer_game, 
+#'                                target_names = c("home.win", "home.draw", "home.lose"), 
+#'                                type = "3way", 
+#'                                options = list(prop_v = 0.2, 
+#'                                               prop_test = 0.2,
+#'                                               number_replicates = 4))
+#' pred_obj <- predict_r_vgam(data = soccer_game, 
+#'                            training = indexes$training, 
+#'                            validation = indexes$validation, 
+#'                            test = indexes$test,
+#'                            formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away, 
+#'                            family = "multinomial")   
 #' 
+#' all_predictions <- mcGet(pred_obj, "prob")
+#' second_replication_only <- mcGet(pred_obj, "prob", 2)
 predict_r_vgam <- function(data, training, validation, test, ...){
   
   number_replications <- ncol(training)
@@ -50,19 +65,22 @@ predict_r_vgam <- function(data, training, validation, test, ...){
 
 if (FALSE){
 
-  load_all("~/projects/sw/R/tgmMultiClass")
-  raw_dataset <- loadRawDataset(folder_path = "~/projects/sw/sport/app/brasileiro_serie_A/data/brazil_A_1011")
-  soccer_game <- raw_dataset[, c("match.id", "home", "away", "scores.home", "scores.away", 
-                                 "fair.odd.home", "fair.odd.draw", "fair.odd.away", "results.home", 
-                                 "home.win", "home.draw", "home.lose")]
-  
-  soccer_game <- tail(soccer_game, 380)
+  data(soccer_game)
   indexes <- generateTestIndexes(dataset = soccer_game, 
                                  target_names = c("home.win", "home.draw", "home.lose"), 
                                  type = "3way", 
                                  options = list(prop_v = 0.2, 
                                                 prop_test = 0.2,
-                                                number_replicates = 3))
+                                                number_replicates = 4))
+  pred_obj <- predict_r_vgam(data = raw_dataset, 
+                             training = indexes$training, 
+                             validation = indexes$validation, 
+                             test = indexes$test,
+                             formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away, 
+                             family = "multinomial")   
+  
+  mcGet(pred_obj, "prob")
+  mcGet(pred_obj, "prob", 2)
   
   
   # criar um bundle junto com training, validation and test
