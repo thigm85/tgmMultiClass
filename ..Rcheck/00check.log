@@ -1,0 +1,128 @@
+* using log directory ‘/Users/tmartins/projects/sw/R/tgmMultiClass/..Rcheck’
+* using R version 3.0.2 (2013-09-25)
+* using platform: x86_64-apple-darwin10.8.0 (64-bit)
+* using session charset: UTF-8
+* checking for file ‘./DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘tgmMultiClass’ version ‘0.0.1’
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... WARNING
+Found the following executable files:
+  .git/objects/04/b9e826b85d70af97f9efb559bb833f926fc293
+  .git/objects/08/e24cc9dcb871af4075674e2a329fe3302bfc3a
+  .git/objects/0a/94ecd43e3530577224f1caada3d92a40bc3eb2
+  .git/objects/2a/c0255f70030554ace7166a9ca7dce4ddaa1097
+  .git/objects/3f/459a0ffcaddd87dcda59acb322a1b08810254c
+  .git/objects/40/3a34085e15a36ae84c5d11b3419d32a398d19c
+  .git/objects/46/1ff6d339ad11f3c8e3ee107aed9fd41821e8e4
+  .git/objects/4a/c23077b0e95538bd71ee46705ed3c9e338c652
+  .git/objects/4c/5098f7c27109bbb332226b02061c59df1362ff
+  .git/objects/4d/74b3516b0013f221293b01f4e80fca4242af40
+  .git/objects/58/d34a595d3c285450197d84dcf3d33770145036
+  .git/objects/6f/79df83390d7c644064af339ee7186809f04b68
+  .git/objects/6f/90dc8c811399767ce4f0463a82a0ac48d0a990
+  .git/objects/6f/c9d1fccf7d1fd2a784277a94c92dde3a4a8a67
+  .git/objects/70/e18a899594e23b66bea45e777cd0310aeec1ee
+  .git/objects/76/b93c747c99fa30bdc4ec47d3e33e8adced66da
+  .git/objects/8c/a7c3001a61c97f21f49d9df9a2080075cb0372
+  .git/objects/8d/5970ee0d2e0d86fd5798c1d6ad72a58a2e4cf4
+  .git/objects/90/1227c025dd1b84f760302d6aab442a5dc064fb
+  .git/objects/a1/f75a6e3cbce645dbe8ebf0844b28d26f42e694
+  .git/objects/a3/2e483afad5cdfd12dc512015bb7a3b255e38c6
+  .git/objects/a7/6f3874091dc267704a750a7c86b5fcd04e6523
+  .git/objects/a8/4d57f18f1f4957e86013fbc959f670cefc8ada
+  .git/objects/ab/12b6c37b14d226b98302cfd364527a0d7a7270
+  .git/objects/b7/8b53e878b7b8c2621f989cbebcb397eed8af9b
+  .git/objects/b7/f256a2f52815cc523829900dde489ea8ba7292
+  .git/objects/c5/e1656d72ff5f08a3e255c706ef94c8a461c230
+  .git/objects/ce/d2f8b795a1c0efc7fa71f3ea22b3b59c96764a
+  .git/objects/d4/6d69469c71d5dd8821cab8560097e004112e13
+  .git/objects/d6/4325b1c6f7aa19400142994c6518d05c7be8fa
+  .git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+  .git/objects/f8/92c8c10135c9b52a1354bd6e08d65b5a2b7603
+Source packages should not contain undeclared executable files.
+See section ‘Package structure’ in the ‘Writing R Extensions’ manual.
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  .gitignore
+  ..Rcheck
+  .git
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘tgmMultiClass’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... WARNING
+Non-standard license specification:
+  Whatever
+Standardizable: FALSE
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directory with the name of a check directory:
+  ./..Rcheck
+Most likely, these were included erroneously.
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... WARNING
+mcGet:
+  function(x, attr, ...)
+mcGet.multiClass:
+  function(x, attr, i)
+
+See section ‘Generic functions and methods’ of the ‘Writing R
+Extensions’ manual.
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... WARNING
+generateTestIndexes.Rd: non-ASCII input and no declared encoding
+problem found in ‘generateTestIndexes.Rd’
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented data sets:
+  ‘soccer_game’
+All user-level objects in a package should have documentation entries.
+See the chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in documentation object 'generateTestIndexes'
+  ‘dataset’ ‘target_names’ ‘type’ ‘options’ ‘...’
+
+Undocumented arguments in documentation object 'mcGet'
+  ‘x’ ‘attr’ ‘...’
+
+Undocumented arguments in documentation object 'mcGet.multiClass'
+  ‘x’ ‘attr’ ‘i’
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See the chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... WARNING
+  Warning: found non-ASCII string
+  'Cear<d5><8d>' in object 'soccer_game'
+* checking data for ASCII and uncompressed saves ... OK
+* checking examples ... OK
+* checking PDF version of manual ... OK
+WARNING: There were 8 warnings.
+NOTE: There was 1 note.

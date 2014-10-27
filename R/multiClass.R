@@ -1,3 +1,6 @@
+#' Extract info from \code{multiClass} objects
+#' 
+#' @export
 mcGet.multiClass <- function(x, attr, i = NULL){
   
   if (attr == "prob"){

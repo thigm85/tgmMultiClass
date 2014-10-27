@@ -51,6 +51,9 @@ parseThreeWayOptions <- function(options){
   return(result)
   }
 
+#' Generate índexes necessary to evaluate models
+#' 
+#' @export
 generateTestIndexes <- function(dataset, target_names, type = "3way", options, ...){
     
   target <- dataset[, target_names]

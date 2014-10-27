@@ -49,7 +49,7 @@ indexes <- generateTestIndexes(dataset = soccer_game,
                                options = list(prop_v = 0.2,
                                               prop_test = 0.2,
                                               number_replicates = 4))
-pred_obj <- predict_r_vgam(data = raw_dataset,
+pred_obj <- predict_r_vgam(data = soccer_game,
                            training = indexes$training,
                            validation = indexes$validation,
                            test = indexes$test,
