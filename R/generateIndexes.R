@@ -51,7 +51,30 @@ parseThreeWayOptions <- function(options){
   return(result)
   }
 
-#' Generate índexes necessary to evaluate models
+#' Generate indexes necessary to evaluate models
+#' 
+#' Create dataset replications with training, validation and test sets.
+#' 
+#' @param dataset Data.frame with the complete dataset available.
+#' @param target_names Character vector with the name of the columns
+#'  in \code{dataset} that contain the target variables. For a 
+#'  classification problem with K classes, there should be K column names.
+#' @param type Type of sampling used. Currently, only '3way' is implemented, see 
+#'  details.
+#' @param options List with parameters to be passed to the resampling function. 
+#'  It depends on the parameter \code{type}, see details.
+#' @param ... further arguments. Currently not used.
+#' 
+#' @return S3 object of class 'datasetResample'.
+#' 
+#' @examples
+#' data(soccer_game)
+#' indexes <- generateTestIndexes(dataset = soccer_game, 
+#'                                target_names = c("home.win", "home.draw", "home.lose"), 
+#'                                type = "3way", 
+#'                                options = list(prop_v = 0.2, 
+#'                                               prop_test = 0.2,
+#'                                               number_replicates = 4))
 #' 
 #' @export
 generateTestIndexes <- function(dataset, target_names, type = "3way", options, ...){
@@ -69,13 +92,42 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options, .
                                      number_replicates = parsed_options$number_replicates) 
   }
   
+  tag <- tempfile(pattern = "datasetResample_", tmpdir = "")
+  tag <- substr(tag, start = 2 , stop = nchar(tag))
+  
   result <- list(target = target,
                  training = indexes$training,
                  validation = indexes$validation,
                  test = indexes$test,
-                 type = type)
+                 type = type,
+                 tag = tag)
+  class(result) <- "datasetResample"
+    
   return(result)  
 }
+
+#' Extract info from \code{datasetResample} objects
+#' 
+#' @export
+mcGet.datasetResample <- function(x, attr){
+
+  if (attr == "target"){
+    return(x$target)
+  } else if (attr == "training"){
+    return(x$training)
+  } else if (attr == "validation"){
+    return(x$validation)
+  } else if (attr == "test"){
+    return(x$test)
+  } else if (attr == "type"){
+    return(x$type)
+  } else if (attr == "tag"){
+    return(x$tag)
+  } else {
+    stop(attr, " not found.")
+  }
+  
+}  
 
 saveTestIndexes <- function(test_indexes, folder_path){
   

@@ -5,6 +5,28 @@ library('tgmMultiClass')
 
 base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("generateTestIndexes")
+### * generateTestIndexes
+
+flush(stderr()); flush(stdout())
+
+### Name: generateTestIndexes
+### Title: Generate indexes necessary to evaluate models
+### Aliases: generateTestIndexes
+
+### ** Examples
+
+data(soccer_game)
+indexes <- generateTestIndexes(dataset = soccer_game,
+                               target_names = c("home.win", "home.draw", "home.lose"),
+                               type = "3way",
+                               options = list(prop_v = 0.2,
+                                              prop_test = 0.2,
+                                              number_replicates = 4))
+
+
+
+cleanEx()
 nameEx("predict_r_vgam")
 ### * predict_r_vgam
 
@@ -24,9 +46,7 @@ indexes <- generateTestIndexes(dataset = soccer_game,
                                               prop_test = 0.2,
                                               number_replicates = 4))
 pred_obj <- predict_r_vgam(data = soccer_game,
-                           training = indexes$training,
-                           validation = indexes$validation,
-                           test = indexes$test,
+                           resample_indexes = indexes,
                            formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away,
                            family = "multinomial")
 

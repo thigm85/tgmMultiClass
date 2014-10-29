@@ -1,4 +1,5 @@
-generateTestIndexes     Generate índexes necessary to evaluate models
+generateTestIndexes     Generate indexes necessary to evaluate models
 mcGet                   Generic function to extract object elements
+mcGet.datasetResample   Extract info from 'datasetResample' objects
 mcGet.multiClass        Extract info from 'multiClass' objects
 predict_r_vgam          multi-class prediction probability with 'vgam'

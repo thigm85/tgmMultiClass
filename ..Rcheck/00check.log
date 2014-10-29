@@ -13,40 +13,91 @@
 Found the following executable files:
   .git/objects/04/b9e826b85d70af97f9efb559bb833f926fc293
   .git/objects/08/e24cc9dcb871af4075674e2a329fe3302bfc3a
+  .git/objects/0a/8a90e300100406b57aa36a4602327962c4a668
   .git/objects/0a/94ecd43e3530577224f1caada3d92a40bc3eb2
+  .git/objects/0f/1eacc7f40287033a990d318a1a09328172571b
+  .git/objects/11/05f864b5987fac552070d29674b2374302c1b1
+  .git/objects/12/500e292e2d0debfe86c8a05603cb27d0ceac7d
+  .git/objects/15/0f408d35187f6c9b2e5b9c638671144a25f246
+  .git/objects/1a/7f7984039985c29253e0e787fdd1deb0aa8aa6
+  .git/objects/1c/1d662c4f68428814d4f063a642db15cecf8f9d
+  .git/objects/1d/82e8e2f65d6064b73aa2051fc57c5b601cc262
+  .git/objects/20/2a50d44f7a5059adaf3f12cb1d40d8ea4c2c17
+  .git/objects/21/fb251aaceb1dd60b2bbed6d2a52ccefcbeb41a
+  .git/objects/26/64342e2f555bb41c5571a230d1198881d46e87
+  .git/objects/2a/b8dbb0fe079f2c96b935b75e8d00b1d45af31b
   .git/objects/2a/c0255f70030554ace7166a9ca7dce4ddaa1097
+  .git/objects/2b/c0e49859f26306108e021b7458da1926976aa9
+  .git/objects/2d/6cab2efab03b60b6b23359e7cea927e26373c9
+  .git/objects/32/061ddc9e87739d07d3d52593e836a25a5941ea
+  .git/objects/35/b8b62a9cfe5a78a6eff3eef98e0ee99320cef1
+  .git/objects/3b/65e3cbb872050f5dbcfacd3f2057d52d28ba0e
   .git/objects/3f/459a0ffcaddd87dcda59acb322a1b08810254c
+  .git/objects/3f/ec98cbc912bbef4bb58327299db6e561246785
   .git/objects/40/3a34085e15a36ae84c5d11b3419d32a398d19c
+  .git/objects/40/bba1febaafead4e27705754e2e41a693e3664d
   .git/objects/46/1ff6d339ad11f3c8e3ee107aed9fd41821e8e4
+  .git/objects/47/361ac3ef71677a23629c57b268139cb79fd535
   .git/objects/4a/c23077b0e95538bd71ee46705ed3c9e338c652
+  .git/objects/4b/b28be6087846a37755bc07ad5074b9dfa77088
   .git/objects/4c/5098f7c27109bbb332226b02061c59df1362ff
   .git/objects/4d/74b3516b0013f221293b01f4e80fca4242af40
+  .git/objects/55/1a60a008b165431ce589a48d6b6dbd10ef9cd2
   .git/objects/58/d34a595d3c285450197d84dcf3d33770145036
+  .git/objects/59/85cec752c3f97c4fa171a5308ba31278cb4a40
+  .git/objects/5c/1b15cc3440f4f92fad9de6585bdc515d7d1750
+  .git/objects/5c/9e335fc9f7c5ad0f115c730bf6937a3e6ed1c6
+  .git/objects/62/fc2a3952627fba11fc942083d5940a49fe14c2
+  .git/objects/65/78287bef5065376d5dc5bd66fb3ab99c7fa76c
+  .git/objects/65/7adbe64a2dda74f120c4927bbcecacde1737ad
+  .git/objects/6c/0a894aebadbea188988e31cf393ba7782ce11a
+  .git/objects/6f/058f3dc2e565aa48e2ad640123d3d69c9c5945
   .git/objects/6f/79df83390d7c644064af339ee7186809f04b68
   .git/objects/6f/90dc8c811399767ce4f0463a82a0ac48d0a990
   .git/objects/6f/c9d1fccf7d1fd2a784277a94c92dde3a4a8a67
   .git/objects/70/e18a899594e23b66bea45e777cd0310aeec1ee
+  .git/objects/73/65b198bf79290c20a6e7c766de262f5067f743
+  .git/objects/76/2bc3e79d476ca5263556ba5cd1ab0e1efb250d
   .git/objects/76/b93c747c99fa30bdc4ec47d3e33e8adced66da
+  .git/objects/80/2fa2418bc3addc8dbdd50ac2717d737109cdcf
+  .git/objects/87/47c84802b73760be2190beb14c8d7f932b3598
+  .git/objects/8a/a1974250fd5144c048a940acd92ac046ca6adb
   .git/objects/8c/a7c3001a61c97f21f49d9df9a2080075cb0372
   .git/objects/8d/5970ee0d2e0d86fd5798c1d6ad72a58a2e4cf4
   .git/objects/90/1227c025dd1b84f760302d6aab442a5dc064fb
   .git/objects/a1/f75a6e3cbce645dbe8ebf0844b28d26f42e694
+  .git/objects/a2/6826416e8f0605e8f39e324d95c989ea0f887e
   .git/objects/a3/2e483afad5cdfd12dc512015bb7a3b255e38c6
   .git/objects/a7/6f3874091dc267704a750a7c86b5fcd04e6523
+  .git/objects/a7/ccc8e5522e9c1425a10269a0c9a212e437e8fa
   .git/objects/a8/4d57f18f1f4957e86013fbc959f670cefc8ada
+  .git/objects/a8/931f907e402c637110e0f796cf40669479729e
   .git/objects/ab/12b6c37b14d226b98302cfd364527a0d7a7270
+  .git/objects/ac/609e92ce3acfc0a48eb3d7de86b0738e082ba9
+  .git/objects/ac/f041e7d883996a879bcd1a8fd64fa853a6fd56
+  .git/objects/b2/916b55fff530ab384fa8faee175a34b5e986f2
+  .git/objects/b5/005246246e6ecac7c3ef3cf0b7095accbc95b2
   .git/objects/b7/8b53e878b7b8c2621f989cbebcb397eed8af9b
   .git/objects/b7/f256a2f52815cc523829900dde489ea8ba7292
+  .git/objects/c4/7068980014b62a2caa26fe300533195b99c57e
   .git/objects/c5/e1656d72ff5f08a3e255c706ef94c8a461c230
+  .git/objects/c7/ba2602073a3ac51687fa8f8a455a533f7895e7
   .git/objects/ce/d2f8b795a1c0efc7fa71f3ea22b3b59c96764a
   .git/objects/d4/6d69469c71d5dd8821cab8560097e004112e13
   .git/objects/d6/4325b1c6f7aa19400142994c6518d05c7be8fa
+  .git/objects/dc/d1dbe89fea715973d04cd1c409d9d95a3a4161
+  .git/objects/e5/62ced30bb286313ac01c92b1d763214d4a67a3
   .git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+  .git/objects/ea/ba4b29e1545e60d1d2d1a6e4d2f9e72d5b0f99
+  .git/objects/ef/62cbb60dfaff45af47acaceec3a776cc54cdff
   .git/objects/f8/92c8c10135c9b52a1354bd6e08d65b5a2b7603
+  .git/objects/fc/da4349106b2d6d36b18c01ce087a1d4daf05f3
+  .git/objects/ff/832037f50b7c701edb7cb0e869eaff620eb5fd
 Source packages should not contain undeclared executable files.
 See section ‘Package structure’ in the ‘Writing R Extensions’ manual.
 * checking for hidden files and directories ... NOTE
 Found the following hidden files and directories:
+  .Rhistory
   .gitignore
   ..Rcheck
   .git
@@ -80,6 +131,11 @@ Most likely, these were included erroneously.
 * checking S3 generic/method consistency ... WARNING
 mcGet:
   function(x, attr, ...)
+mcGet.datasetResample:
+  function(x, attr)
+
+mcGet:
+  function(x, attr, ...)
 mcGet.multiClass:
   function(x, attr, i)
 
@@ -88,9 +144,7 @@ Extensions’ manual.
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... OK
-* checking Rd files ... WARNING
-generateTestIndexes.Rd: non-ASCII input and no declared encoding
-problem found in ‘generateTestIndexes.Rd’
+* checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... WARNING
@@ -101,11 +155,11 @@ See the chapter ‘Writing R documentation files’ in the ‘Writing R
 Extensions’ manual.
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... WARNING
-Undocumented arguments in documentation object 'generateTestIndexes'
-  ‘dataset’ ‘target_names’ ‘type’ ‘options’ ‘...’
-
 Undocumented arguments in documentation object 'mcGet'
   ‘x’ ‘attr’ ‘...’
+
+Undocumented arguments in documentation object 'mcGet.datasetResample'
+  ‘x’ ‘attr’
 
 Undocumented arguments in documentation object 'mcGet.multiClass'
   ‘x’ ‘attr’ ‘i’
@@ -124,5 +178,5 @@ Extensions’ manual.
 * checking data for ASCII and uncompressed saves ... OK
 * checking examples ... OK
 * checking PDF version of manual ... OK
-WARNING: There were 8 warnings.
+WARNING: There were 7 warnings.
 NOTE: There was 1 note.

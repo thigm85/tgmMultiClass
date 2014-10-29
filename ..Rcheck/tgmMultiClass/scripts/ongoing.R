@@ -1,7 +1,6 @@
 library(devtools)
 
-# Continue writing example documentation in vgam.R
-# Some error when parsing the example with R CMD CHECK
+# Update README.md
 
 load_all("~/projects/sw/R/tgmMultiClass/")
 

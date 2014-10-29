@@ -1,4 +1,5 @@
 generateTestIndexes	generateTestIndexes
 mcGet	mcGet
+mcGet.datasetResample	mcGet.datasetResample
 mcGet.multiClass	mcGet.multiClass
 predict_r_vgam	predict_r_vgam

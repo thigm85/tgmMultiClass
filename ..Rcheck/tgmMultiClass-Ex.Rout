@@ -27,6 +27,28 @@ Loading required package: stats4
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
+> nameEx("generateTestIndexes")
+> ### * generateTestIndexes
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: generateTestIndexes
+> ### Title: Generate indexes necessary to evaluate models
+> ### Aliases: generateTestIndexes
+> 
+> ### ** Examples
+> 
+> data(soccer_game)
+> indexes <- generateTestIndexes(dataset = soccer_game,
++                                target_names = c("home.win", "home.draw", "home.lose"),
++                                type = "3way",
++                                options = list(prop_v = 0.2,
++                                               prop_test = 0.2,
++                                               number_replicates = 4))
+> 
+> 
+> 
+> cleanEx()
 > nameEx("predict_r_vgam")
 > ### * predict_r_vgam
 > 
@@ -46,9 +68,7 @@ Loading required package: stats4
 +                                               prop_test = 0.2,
 +                                               number_replicates = 4))
 > pred_obj <- predict_r_vgam(data = soccer_game,
-+                            training = indexes$training,
-+                            validation = indexes$validation,
-+                            test = indexes$test,
++                            resample_indexes = indexes,
 +                            formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away,
 +                            family = "multinomial")
 > 
@@ -61,7 +81,7 @@ Loading required package: stats4
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.567 0.013 0.582 0 0 
+Time elapsed:  0.618 0.017 0.656 0 0 
 > grDevices::dev.off()
 null device 
           1 

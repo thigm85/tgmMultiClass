@@ -17,6 +17,8 @@ mcGet.multiClass <- function(x, attr, i = NULL){
     }
   } else if (attr == "class_labels"){
     return(x[["class_labels"]])
+  } else if (attr == "tag"){
+    return(x[["datasetResample_tag"]])
   } else {
     stop(attr, " not found.")
   }
