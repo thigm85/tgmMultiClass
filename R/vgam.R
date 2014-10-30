@@ -38,6 +38,8 @@
 #' @export
 predict_r_vgam <- function(data, resample_indexes, ...){
   
+  installSuggestedPackage("VGAM")
+  
   training <- mcGet(resample_indexes, "training")
   validation <- mcGet(resample_indexes, "validation")
   test <- mcGet(resample_indexes, "test")
