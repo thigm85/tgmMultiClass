@@ -2,7 +2,8 @@
 \alias{generateTestIndexes}
 \title{Generate indexes necessary to evaluate models}
 \usage{
-generateTestIndexes(dataset, target_names, type = "3way", options, ...)
+generateTestIndexes(dataset, target_names, type = "3way", options,
+  include_dataset = TRUE, ...)
 }
 \arguments{
   \item{dataset}{Data.frame with the complete dataset
@@ -19,6 +20,9 @@ generateTestIndexes(dataset, target_names, type = "3way", options, ...)
   \item{options}{List with parameters to be passed to the
   resampling function.  It depends on the parameter
   \code{type}, see details.}
+
+  \item{include_dataset}{Boolean variable that indicates if
+  the dataset should also be returned.}
 
   \item{...}{further arguments. Currently not used.}
 }

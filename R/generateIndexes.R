@@ -63,6 +63,8 @@ parseThreeWayOptions <- function(options){
 #'  details.
 #' @param options List with parameters to be passed to the resampling function. 
 #'  It depends on the parameter \code{type}, see details.
+#' @param include_dataset Boolean variable that indicates if the dataset should 
+#'  also be returned. 
 #' @param ... further arguments. Currently not used.
 #' 
 #' @return S3 object of class 'datasetResample'.
@@ -77,7 +79,8 @@ parseThreeWayOptions <- function(options){
 #'                                               number_replicates = 4))
 #' 
 #' @export
-generateTestIndexes <- function(dataset, target_names, type = "3way", options, ...){
+generateTestIndexes <- function(dataset, target_names, type = "3way", options, 
+                                include_dataset = TRUE, ...){
     
   target <- dataset[, target_names]
   
@@ -95,7 +98,12 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options, .
   tag <- tempfile(pattern = "datasetResample_", tmpdir = "")
   tag <- substr(tag, start = 2 , stop = nchar(tag))
   
-  result <- list(target = target,
+  if (!include_dataset){
+    dataset <- NULL
+  }
+  
+  result <- list(dataset = dataset,
+                 target = target,
                  training = indexes$training,
                  validation = indexes$validation,
                  test = indexes$test,
@@ -111,7 +119,9 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options, .
 #' @export
 mcGet.datasetResample <- function(x, attr){
 
-  if (attr == "target"){
+  if (attr == "dataset"){
+    return(x$dataset)
+  } else if (attr == "target"){
     return(x$target)
   } else if (attr == "training"){
     return(x$training)

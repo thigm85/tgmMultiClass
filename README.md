@@ -24,10 +24,9 @@ indexes <- generateTestIndexes(dataset = soccer_game,
 * VGAM
 
 ```
-pred_obj <- predict_r_vgam(data = soccer_game, 
-                           resample_indexes = indexes,
-                           formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away, 
-                           family = "multinomial")   
+pred_obj <- predict_r_vgam(resample_indexes = indexes,
+                           formula = cbind(home.win, home.draw, home.lose) ~ 1 + fair.odd.home + fair.odd.draw + fair.odd.away,
+                           family = "multinomial")  
 ```
 
 
