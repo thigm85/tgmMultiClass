@@ -29,7 +29,15 @@ pred_obj <- predict_r_vgam(resample_indexes = indexes,
                            family = "multinomial")  
 ```
 
+## Evaluation metric
 
+* Log score
+
+```
+eval <- evaluateProbClass(resample_indexes = indexes, 
+                          pred_obj = pred_obj, 
+                          type = "log_score")
+```
 
 
 

@@ -12,7 +12,7 @@ mcGet.multiClass <- function(x, attr, i = NULL){
         colnames(result) <- x[["class_labels"]]
         return(result)
       } else {
-        stop("wrong index i.")
+        stop("index i out of range.")
       }
     }
   } else if (attr == "class_labels"){

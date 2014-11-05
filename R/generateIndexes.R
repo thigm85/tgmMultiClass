@@ -49,7 +49,7 @@ parseThreeWayOptions <- function(options){
                  prop_test = options$prop_test, 
                  number_replicates = options$number_replicates)
   return(result)
-  }
+}
 
 #' Generate indexes necessary to evaluate models
 #' 
@@ -81,7 +81,7 @@ parseThreeWayOptions <- function(options){
 #' @export
 generateTestIndexes <- function(dataset, target_names, type = "3way", options, 
                                 include_dataset = TRUE, ...){
-    
+  
   target <- dataset[, target_names]
   
   type <- match.arg(type)
@@ -93,6 +93,7 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options,
                                      prop_test = parsed_options$prop_test, 
                                      number_lines = number_lines, 
                                      number_replicates = parsed_options$number_replicates) 
+    number_replicates <- parsed_options$number_replicates
   }
   
   tag <- tempfile(pattern = "datasetResample_", tmpdir = "")
@@ -108,17 +109,18 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options,
                  validation = indexes$validation,
                  test = indexes$test,
                  type = type,
-                 tag = tag)
+                 tag = tag,
+                 number_replicates = number_replicates)
   class(result) <- "datasetResample"
-    
+  
   return(result)  
 }
 
 #' Extract info from \code{datasetResample} objects
 #' 
 #' @export
-mcGet.datasetResample <- function(x, attr){
-
+mcGet.datasetResample <- function(x, attr, i = NULL){
+  
   if (attr == "dataset"){
     return(x$dataset)
   } else if (attr == "target"){
@@ -133,6 +135,20 @@ mcGet.datasetResample <- function(x, attr){
     return(x$type)
   } else if (attr == "tag"){
     return(x$tag)
+  } else if (attr == "number_replicates"){
+    return(x$number_replicates)
+  } else if (attr == "test_target"){
+    if (is.null(i)){
+      stop("test_target: provide index i.")  
+    } else {
+      test <- x[["test"]]
+      if (i >= 1 & i <= ncol(test)){
+        result <- x[["target"]][test[, i], ]
+        return(result)
+      } else {
+        stop("index i out of range.")
+      }
+    }
   } else {
     stop(attr, " not found.")
   }
