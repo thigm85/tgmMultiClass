@@ -1,3 +1,36 @@
+#' Creates a new index matrix based on a mapping data frame
+#' 
+#' @details
+#' As an example, this function is used to convert resampling indexes
+#' that were constructed wrt observational units back to the rows
+#' mapping
+#' 
+#' @examples
+#' mapping <- data.frame(from = rep(1:5, times = 4), to = 1:20)
+#' unit_index_matrix <- matrix(c(1,3,5), nrow = 3, ncol = 2)
+#' 
+#' new_index_matrix <- mappingIndexes(unit_index_matrix = unit_index_matrix, 
+#'                                    mapping_from = mapping$from, 
+#'                                    mapping_to = mapping$to)
+mappingIndexes <- function(unit_index_matrix, 
+                           mapping_from, 
+                           mapping_to){
+  
+  unit_index_matrix <- as.matrix(unit_index_matrix)
+  number_columns <- ncol(unit_index_matrix)
+  
+  mapping <- data.frame(from = mapping_from,
+                        to = mapping_to)
+  
+  new_index_matrix <- NULL
+  for (i in 1:number_columns){
+    condition <- mapping[, "from"] %in% unit_index_matrix[,i]
+    new_index_matrix <- cbind(new_index_matrix, mapping[condition, "to"])
+  }
+  
+  return(new_index_matrix)
+}
+
 generateIndexThreeWay <- function # Generate train, cv and test using simple three-way splits.
 (prop_v, 
  ### proportion of the data that goes to validation. Between 0 and 1.
@@ -51,6 +84,46 @@ parseThreeWayOptions <- function(options){
   return(result)
 }
 
+#' Three Way wrapper function to be used within \code{generateTestIndexes}.
+#' 
+#' @param options It is a list with: \code{prop_v}, which is a number between 0 and 1 that
+#' describes the proportion of the data that goes into the validation set, 
+#' \code{prop_test}, which is a number between 0 and 1 that describes the proportion 
+#' of the data that goes into the test set and \code{number_replicates} to indicate
+#' how many data replications we want.
+#' @inheritParams generateTestIndexes
+generateTestIndexes_threeWay <- function(dataset, options, observational_unit = NULL){ 
+  
+  parsed_options <- parseThreeWayOptions(options)
+  number_replicates <- parsed_options$number_replicates
+
+  if (is.null(observational_unit)){
+    number_lines <- nrow(dataset)  
+    indexes <- generateIndexThreeWay(prop_v = parsed_options$prop_v, 
+                                     prop_test = parsed_options$prop_test, 
+                                     number_lines = number_lines, 
+                                     number_replicates = parsed_options$number_replicates) 
+  } else {
+    rows_and_units <- data.frame(row = 1:nrow(dataset), 
+                                 unit = as.numeric(as.factor(dataset[, observational_unit])))
+    number_lines <- max(rows_and_units$unit)      
+    indexes <- generateIndexThreeWay(prop_v = parsed_options$prop_v, 
+                                     prop_test = parsed_options$prop_test, 
+                                     number_lines = number_lines, 
+                                     number_replicates = parsed_options$number_replicates)
+    indexes[["training"]] <- mappingIndexes(unit_index_matrix = indexes[["training"]], 
+                                            mapping_from = rows_and_units[["unit"]], 
+                                            mapping_to = rows_and_units[["row"]])
+    indexes[["validation"]] <- mappingIndexes(unit_index_matrix = indexes[["validation"]], 
+                                              mapping_from = rows_and_units[["unit"]], 
+                                              mapping_to = rows_and_units[["row"]])
+    indexes[["test"]] <- mappingIndexes(unit_index_matrix = indexes[["test"]], 
+                                        mapping_from = rows_and_units[["unit"]], 
+                                        mapping_to = rows_and_units[["row"]])
+  }
+  return(indexes)
+}
+
 #' Generate indexes necessary to evaluate models
 #' 
 #' Create dataset replications with training, validation and test sets.
@@ -61,6 +134,11 @@ parseThreeWayOptions <- function(options){
 #'  classification problem with K classes, there should be K column names.
 #' @param type Type of sampling used. Currently, only '3way' is implemented, see 
 #'  details.
+#' @param observational_unit Column name within \code{dataset} that will be used 
+#' as reference to assign rows to training, validation and test sets. The same 
+#' observational unit cannot be assigned to more than one of training, validation 
+#' or test sets. Default is set to \code{NULL}, meaning that each row is an observational 
+#' unit.   
 #' @param options List with parameters to be passed to the resampling function. 
 #'  It depends on the parameter \code{type}, see details.
 #' @param include_dataset Boolean variable that indicates if the dataset should 
@@ -71,6 +149,7 @@ parseThreeWayOptions <- function(options){
 #' 
 #' @examples
 #' data(soccer_game)
+#'
 #' indexes <- generateTestIndexes(dataset = soccer_game, 
 #'                                target_names = c("home.win", "home.draw", "home.lose"), 
 #'                                type = "3way", 
@@ -78,8 +157,22 @@ parseThreeWayOptions <- function(options){
 #'                                               prop_test = 0.2,
 #'                                               number_replicates = 4))
 #' 
+#' # Observation unit: Means that rows that belong to the same observation unit will be placed 
+#' # together in one of training, validation or test set. The next example uses the 'round' variable 
+#' # as observational unit, meaning that all games from an specific round will be clustered into the
+#' # same set.
+#' 
+#' indexes <- generateTestIndexes(dataset = soccer_game, 
+#'                                target_names = c("home.win", "home.draw", "home.lose"), 
+#'                                type = "3way", 
+#'                                observational_unit = "round",
+#'                                options = list(prop_v = 0.2, 
+#'                                               prop_test = 0.2,
+#'                                               number_replicates = 4))
+
 #' @export
-generateTestIndexes <- function(dataset, target_names, type = "3way", options, 
+generateTestIndexes <- function(dataset, target_names, type = "3way", 
+                                observational_unit = NULL, options, 
                                 include_dataset = TRUE, ...){
   
   target <- dataset[, target_names]
@@ -87,13 +180,11 @@ generateTestIndexes <- function(dataset, target_names, type = "3way", options,
   type <- match.arg(type)
   
   if (type == "3way"){
-    parsed_options <- parseThreeWayOptions(options)
-    number_lines <- nrow(dataset)
-    indexes <- generateIndexThreeWay(prop_v = parsed_options$prop_v, 
-                                     prop_test = parsed_options$prop_test, 
-                                     number_lines = number_lines, 
-                                     number_replicates = parsed_options$number_replicates) 
-    number_replicates <- parsed_options$number_replicates
+    
+    indexes <- generateTestIndexes_threeWay(dataset = dataset, 
+                                            options = options, 
+                                            observational_unit = observational_unit)
+
   }
   
   tag <- tempfile(pattern = "datasetResample_", tmpdir = "")
