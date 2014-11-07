@@ -17,6 +17,16 @@ indexes <- generateTestIndexes(dataset = soccer_game,
                                options = list(prop_v = 0.2, 
                                               prop_test = 0.2,
                                               number_replicates = 4))
+                                              
+# We can use `observational_unit` argument if we want that games happening 
+# in the same `round` be put together in training, validation or test set.
+indexes <- generateTestIndexes(dataset = soccer_game,
+                               target_names = c("home.win", "home.draw", "home.lose"),
+                               type = "3way",
+                               observational_unit = "round",
+                               options = list(prop_v = 0.2,
+                                              prop_test = 0.2,
+                                              number_replicates = 4))                                              
 ```
 
 ## Multiclass prediction
