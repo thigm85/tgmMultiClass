@@ -92,6 +92,11 @@ parseThreeWayOptions <- function(options){
 #' of the data that goes into the test set and \code{number_replicates} to indicate
 #' how many data replications we want.
 #' @inheritParams generateTestIndexes
+#' 
+#' @return A list with \code{indexes} and \code{number_replicates} elements.
+#' \code{indexes} contains the \code{training}, \code{validation} and \code{test}
+#' matrices and \code{number_replicates} contains the number of replications
+#' used.   
 generateTestIndexes_threeWay <- function(dataset, options, observational_unit = NULL){ 
   
   parsed_options <- parseThreeWayOptions(options)
@@ -121,7 +126,8 @@ generateTestIndexes_threeWay <- function(dataset, options, observational_unit = 
                                         mapping_from = rows_and_units[["unit"]], 
                                         mapping_to = rows_and_units[["row"]])
   }
-  return(indexes)
+  result <- list(indexes = indexes, number_replicates = number_replicates)
+  return(result)
 }
 
 #' Generate indexes necessary to evaluate models
@@ -181,10 +187,12 @@ generateTestIndexes <- function(dataset, target_names, type = "3way",
   
   if (type == "3way"){
     
-    indexes <- generateTestIndexes_threeWay(dataset = dataset, 
-                                            options = options, 
-                                            observational_unit = observational_unit)
-
+    index_obj <- generateTestIndexes_threeWay(dataset = dataset, 
+                                              options = options, 
+                                              observational_unit = observational_unit)
+    indexes <- index_obj$indexes
+    number_replicates <- index_obj$number_replicates
+    
   }
   
   tag <- tempfile(pattern = "datasetResample_", tmpdir = "")
@@ -246,43 +254,89 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
   
 }  
 
-saveTestIndexes <- function(test_indexes, folder_path){
+#' Check if all resample indexes elements exist
+checkAllResampleIndexesExists <- function(folder_path){
   
-  write.table(x = test_indexes$target, file = file.path(folder_path, "target.txt"), 
-              quote = FALSE, sep = "\t", row.names = FALSE)
-  write.table(x = test_indexes$training, file = file.path(folder_path, "training.txt"), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write.table(x = test_indexes$validation, file = file.path(folder_path, "validation.txt"), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write.table(x = test_indexes$test, file = file.path(folder_path, "test.txt"), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write.table(x = test_indexes$type, file = file.path(folder_path, "type_validation.txt"), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  exists <- (file.exists(file.path(folder_path, "resample_dataset.txt")) &
+               file.exists(file.path(folder_path, "resample_target.txt")) &
+               file.exists(file.path(folder_path, "resample_training.txt")) &
+               file.exists(file.path(folder_path, "resample_validation.txt")) &
+               file.exists(file.path(folder_path, "resample_test.txt")) &
+               file.exists(file.path(folder_path, "resample_type.txt")) &
+               file.exists(file.path(folder_path, "resample_tag.txt")) &
+               file.exists(file.path(folder_path, "number_replicates")))
+  return(exists)
 }
 
-loadTestIndexes <- function(folder_path){
+#' Check if any of the resample indexes elements exist
+checkAnyResampleIndexesExists <- function(folder_path){
+  
+  exists <- (file.exists(file.path(folder_path, "resample_dataset.txt")) |
+               file.exists(file.path(folder_path, "resample_target.txt")) |
+               file.exists(file.path(folder_path, "resample_training.txt")) |
+               file.exists(file.path(folder_path, "resample_validation.txt")) |
+               file.exists(file.path(folder_path, "resample_test.txt")) |
+               file.exists(file.path(folder_path, "resample_type.txt")) |
+               file.exists(file.path(folder_path, "resample_tag.txt")) |
+               file.exists(file.path(folder_path, "number_replicates")))
+  return(exists)
+}
+
+#' Save a resample_indexes object into txt files.
+saveResampleIndexes <- function(resample_indexes, folder_path, optional_name = NULL){
+  
+  if (is.null(optional_name)){
+    prefix <- "resample_"
+  } else {
+    prefix <- paste(optional_name, "_resample_", sep="")
+  }
+  
+  write.table(x = mcGet(resample_indexes, "dataset"), file = file.path(folder_path, paste(prefix, "dataset.txt", sep="")), 
+              quote = FALSE, sep = "\t", row.names = FALSE)
+  write.table(x = mcGet(resample_indexes, "target"), file = file.path(folder_path, paste(prefix, "target.txt", sep="")), 
+              quote = FALSE, sep = "\t", row.names = FALSE)
+  write.table(x = mcGet(resample_indexes, "training"), file = file.path(folder_path, paste(prefix, "training.txt", sep="")), 
+              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  write.table(x = mcGet(resample_indexes, "validation"), file = file.path(folder_path, paste(prefix, "validation.txt", sep="")), 
+              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  write.table(x = mcGet(resample_indexes, "test"), file = file.path(folder_path, paste(prefix, "test.txt", sep="")), 
+              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  write(x = mcGet(resample_indexes, "type"), file = file.path(folder_path, paste(prefix, "type.txt", sep="")), ncolumns = 1)
+  write(x = mcGet(resample_indexes, "tag"), file = file.path(folder_path, paste(prefix, "tag.txt", sep="")), ncolumns = 1)
+  write(x = mcGet(resample_indexes, "number_replicates"), file = file.path(folder_path, paste(prefix, "number_replicates.txt", sep="")), ncolumns = 1)
+  
+}
+
+#' Load a resample_indexes object from txt files.
+loadResampleIndexes <- function(folder_path, optional_name = NULL){
+
+  if (is.null(optional_name)){
+    prefix <- "resample_"
+  } else {
+    prefix <- paste(optional_name, "_resample_", sep="")
+  }
+  
+  number_replicates <- scan(file = file.path(folder_path, paste(prefix, "number_replicates.txt", sep="")), 
+                            what = double(), quiet = TRUE)
   
   test_indexes <- list()
-  test_indexes$target <- read.delim(file = file.path(folder_path, "target.txt"), 
-                                    header = TRUE, sep = "\t")
-  test_indexes$training <- read.delim(file = file.path(folder_path, "training.txt"), 
-                                      header = FALSE, sep = "\t")
-  test_indexes$validation <- read.delim(file = file.path(folder_path, "validation.txt"), 
-                                        header = FALSE, sep = "\t")
-  test_indexes$test <- read.delim(file = file.path(folder_path, "test.txt"), 
-                                  header = FALSE, sep = "\t")
-  test_indexes$type <- read.delim(file = file.path(folder_path, "type_validation.txt"), 
-                                  header = FALSE, sep = "\t")
+  test_indexes$dataset <- read.delim(file = file.path(folder_path, paste(prefix, "dataset.txt", sep="")), 
+                                     header = TRUE, sep = "\t")
+  test_indexes$target <- read.delim(file = file.path(folder_path, paste(prefix, "target.txt", sep="")), 
+                                     header = TRUE, sep = "\t")
+  test_indexes$training <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "training.txt", sep="")), 
+                                  header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
+  test_indexes$validation <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "validation.txt", sep="")), 
+                                     header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
+  test_indexes$test <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "test.txt", sep="")), 
+                                     header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
+  test_indexes$type <- scan(file = file.path(folder_path, paste(prefix, "type.txt", sep="")), 
+                            what = character(), quiet = TRUE)
+  test_indexes$tag <- scan(file = file.path(folder_path, paste(prefix, "tag.txt", sep="")), 
+                            what = character(), quiet = TRUE)
+  test_indexes$number_replicates <- number_replicates
+  class(test_indexes) <- "datasetResample"
   
   return(test_indexes)
 }
 
-checkIndexesExists <- function(folder_path){
-  
-  exists <- (file.exists(file.path(folder_path, "target.txt")) &
-               file.exists(file.path(folder_path, "training.txt")) &
-               file.exists(file.path(folder_path, "validation.txt")) &
-               file.exists(file.path(folder_path, "test.txt")) &
-               file.exists(file.path(folder_path, "type_validation.txt")))
-  return(exists)
-}
