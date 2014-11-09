@@ -24,6 +24,13 @@ generateTestIndexes_threeWay(dataset, options, observational_unit = NULL)
   \code{NULL}, meaning that each row is an observational
   unit.}
 }
+\value{
+A list with \code{indexes} and \code{number_replicates}
+elements. \code{indexes} contains the \code{training},
+\code{validation} and \code{test} matrices and
+\code{number_replicates} contains the number of
+replications used.
+}
 \description{
 Three Way wrapper function to be used within
 \code{generateTestIndexes}.
