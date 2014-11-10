@@ -87,6 +87,8 @@ computeLogScoreMultiClass <- function(resample_indexes, pred_obj){
 #' @return A matrix where each column represents the scores
 #' for a given replication. The number of rows is equal to the number
 #' of prediction points.
+#' 
+#' @export
 evaluateProbClass <- function(resample_indexes, pred_obj, type, ignore_tag = FALSE){
   
   resample_tag <- mcGet(resample_indexes, "tag")
@@ -106,6 +108,9 @@ evaluateProbClass <- function(resample_indexes, pred_obj, type, ignore_tag = FAL
   
 }
 
+#' Select the best model based on computed metric
+#' 
+#' @export
 PickBestValidationModel <- function(validation_metric_matrix){
   
   best_model <- which.max(colSums(validation_metric_matrix, na.rm = TRUE))
@@ -113,6 +118,9 @@ PickBestValidationModel <- function(validation_metric_matrix){
   
 }
 
+#' Summarize Validation metric
+#' 
+#' @export
 SummaryValidationMetric <- function(tune_grid, validation_metric_matrix, 
                                     replicate_index, previous_summary = NULL){
   summary <- rbind(previous_summary, 
