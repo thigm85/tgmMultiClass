@@ -41,10 +41,10 @@ test_that("evaluateProbClass with log_score works as expected", {
   }
   
   expected <- matrix(   
-    c(log(0.2298175), log(0.3093257), log(0.4207831),
-      log(0.3884281), log(0.3979297), log(0.4713690),
-      log(0.2941116), log(0.4442579), log(0.3896409),
-      log(0.2956390), log(0.3215099), log(0.2717192)), 3, 4)
+    c(log(0.1619565), log(0.0002236837), log(0.8739541),
+      log(0.2792624), log(0.18168595), log(0.4349983),
+      log(0.4895213), log(1.074798e-05), log(0.5191920),
+      log(0.4040598), log(0.4127275), log(0.1598506)), 3, 4)
   
   eval <- evaluateProbClass(resample_indexes = indexes, 
                             pred_obj = pred_obj, 

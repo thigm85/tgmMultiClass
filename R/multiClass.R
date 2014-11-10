@@ -7,8 +7,8 @@ mcGet.multiClass <- function(x, attr, i = NULL){
     if (is.null(i)){
       return(x[["prob"]])  
     } else {
-      if (i >= 1 & i <= ncol(x[["prob"]])){
-        result <- matrix(x[["prob"]][, i], ncol = length(x[["class_labels"]]), byrow = FALSE)
+      if (i >= 1 & i <= length(x[["prob"]])){
+        result <- matrix(x[["prob"]][[i]], ncol = length(x[["class_labels"]]), byrow = FALSE)
         colnames(result) <- x[["class_labels"]]
         return(result)
       } else {

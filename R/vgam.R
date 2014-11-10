@@ -45,7 +45,7 @@ predict_r_vgam <- function(resample_indexes, ...){
   tag <- mcGet(resample_indexes, "tag")
   
   number_replications <- mcGet(resample_indexes, "number_replicates")
-  keep_probs <- NULL
+  keep_probs <- list()
   
   for (i in 1:number_replications){
 
@@ -54,7 +54,7 @@ predict_r_vgam <- function(resample_indexes, ...){
     fit <- do.call(what = "vgam", args = list(data = training_data, ...))
     
     probs <- predict(fit, newdata = data[mcGet(resample_indexes, "test", i), ], type = "response")  
-    keep_probs <- cbind(keep_probs, c(probs))    
+    keep_probs[[i]] <- c(probs)
     
   }
   
