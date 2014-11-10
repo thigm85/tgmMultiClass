@@ -113,7 +113,7 @@ evaluateProbClass <- function(resample_indexes, pred_obj, type, ignore_tag = FAL
 #' @export
 PickBestValidationModel <- function(validation_metric_matrix){
   
-  best_model <- which.max(colSums(validation_metric_matrix, na.rm = TRUE))
+  best_model <- which.max(colMeans(validation_metric_matrix, na.rm = TRUE))
   return(best_model)
   
 }
