@@ -225,17 +225,41 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
   } else if (attr == "target"){
     return(x$target)
   } else if (attr == "training"){
-    return(x$training)
+    if (is.null(i)){
+      return(x$training)  
+    } else {
+      return(x$training[,i])
+    }
   } else if (attr == "validation"){
-    return(x$validation)
+    if (is.null(i)){
+      return(x$validation)  
+    } else {
+      return(x$validation[,i])
+    }
   } else if (attr == "test"){
-    return(x$test)
+    if (is.null(i)){
+      return(x$test)  
+    } else {
+      return(x$test[,i])
+    }
   } else if (attr == "type"){
     return(x$type)
   } else if (attr == "tag"){
     return(x$tag)
   } else if (attr == "number_replicates"){
     return(x$number_replicates)
+  } else if (attr == "validation_target"){
+    if (is.null(i)){
+      stop("validation_target: provide index i.")  
+    } else {
+      validation <- x[["validation"]]
+      if (i >= 1 & i <= ncol(validation)){
+        result <- x[["target"]][validation[, i], ]
+        return(result)
+      } else {
+        stop("index i out of range.")
+      }
+    }
   } else if (attr == "test_target"){
     if (is.null(i)){
       stop("test_target: provide index i.")  
