@@ -54,13 +54,13 @@ test_that("startandard generateTestIndexes with 3way type works as expected", {
                 (ncol(obs_test) == 4))
   ## empty intersection
   for (i in 1:4){
-    expect_false(any(obs_training[, i] %in% obs_validation[, i]))
-    expect_false(any(obs_training[, i] %in% obs_test[, i]))
-    expect_false(any(obs_validation[, i] %in% obs_test[, i]))
+    expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "validation", i)))
+    expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "test", i)))
+    expect_false(any(mcGet(indexes, "validation", i) %in% mcGet(indexes, "test", i)))
   }
   ## valid indexes
   for (i in 1:4){
-    expect_true(all(1:number_lines %in% c(obs_training[, i], obs_validation[, i], obs_test[, i])))
+    expect_true(all(1:number_lines %in% c(mcGet(indexes, "training", i), mcGet(indexes, "validation", i), mcGet(indexes, "test", i))))
   }
   ## type
   obs_type <- mcGet(indexes, "type")
@@ -99,19 +99,19 @@ test_that("generateTestIndexes with 3way type and observational_unit works as ex
                 (ncol(obs_test) == 4))
   ## empty intersection
   for (i in 1:4){
-    expect_false(any(obs_training[, i] %in% obs_validation[, i]))
-    expect_false(any(obs_training[, i] %in% obs_test[, i]))
-    expect_false(any(obs_validation[, i] %in% obs_test[, i]))
+    expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "validation", i)))
+    expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "test", i)))
+    expect_false(any(mcGet(indexes, "validation", i) %in% mcGet(indexes, "test", i)))
   }
   ## valid indexes
   for (i in 1:4){
-    expect_true(all(1:number_lines %in% c(obs_training[, i], obs_validation[, i], obs_test[, i])))
+    expect_true(all(1:number_lines %in% c(mcGet(indexes, "training", i), mcGet(indexes, "validation", i), mcGet(indexes, "test", i))))
   }
   ## empty round intersection
   for (i in 1:4){
-    expect_false(any(data[obs_training[, i], "round"] %in% data[obs_validation[, i], "round"]))
-    expect_false(any(data[obs_training[, i], "round"] %in% data[obs_test[, i], "round"]))
-    expect_false(any(data[obs_validation[, i], "round"] %in% data[obs_test[, i], "round"]))
+    expect_false(any(data[mcGet(indexes, "training", i), "round"] %in% data[mcGet(indexes, "validation", i), "round"]))
+    expect_false(any(data[mcGet(indexes, "training", i), "round"] %in% data[mcGet(indexes, "test", i), "round"]))
+    expect_false(any(data[mcGet(indexes, "validation", i), "round"] %in% data[mcGet(indexes, "test", i), "round"]))
   }
   
 })

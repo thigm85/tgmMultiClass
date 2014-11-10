@@ -39,21 +39,21 @@ predict_r_vgam <- function(resample_indexes, ...){
   
   data <- mcGet(resample_indexes, "dataset")
   
-  training <- mcGet(resample_indexes, "training")
-  validation <- mcGet(resample_indexes, "validation")
-  test <- mcGet(resample_indexes, "test")
+  #training <- mcGet(resample_indexes, "training")
+  #validation <- mcGet(resample_indexes, "validation")
+  #test <- mcGet(resample_indexes, "test")
   tag <- mcGet(resample_indexes, "tag")
   
-  number_replications <- ncol(training)
+  number_replications <- mcGet(resample_indexes, "number_replicates")
   keep_probs <- NULL
   
   for (i in 1:number_replications){
 
-    training_data <- data[c(training[, i], validation[, i]), ]
+    training_data <- data[c(mcGet(resample_indexes, "training", i), mcGet(resample_indexes, "validation", i)), ]
 
     fit <- do.call(what = "vgam", args = list(data = training_data, ...))
     
-    probs <- predict(fit, newdata = data[test[,i], ], type = "response")  
+    probs <- predict(fit, newdata = data[mcGet(resample_indexes, "test", i), ], type = "response")  
     keep_probs <- cbind(keep_probs, c(probs))    
     
   }
