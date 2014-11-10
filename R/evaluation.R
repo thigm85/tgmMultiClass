@@ -114,7 +114,7 @@ evaluateProbClass <- function(resample_indexes, pred_obj, type, ignore_tag = FAL
 #' @export
 PickBestValidationModel <- function(validation_metric_matrix){
   
-  best_model <- which.max(colMeans(validation_metric_matrix, na.rm = TRUE))
+  best_model <- which.max(sapply(validation_metric_matrix, FUN = mean, na.rm = TRUE))
   return(best_model)
   
 }
@@ -126,7 +126,7 @@ SummaryValidationMetric <- function(tune_grid, validation_metric_matrix,
                                     replicate_index, previous_summary = NULL){
   
   new_matrix <- cbind(replicate_index, tune_grid, 
-                      as.numeric(colMeans(validation_metric_matrix, na.rm = TRUE)))
+                      as.numeric(sapply(validation_metric_matrix, FUN = mean, na.rm = TRUE)))
   colnames(new_matrix) <- c("Replicate", colnames(tune_grid), "metric")
   
   summary <- rbind(previous_summary, 
