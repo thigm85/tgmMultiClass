@@ -51,16 +51,17 @@ computeLogScore <- function(prediction, target){
 computeLogScoreMultiClass <- function(resample_indexes, pred_obj){
   
   number_replicates <- mcGet(resample_indexes, "number_replicates")
-  scores_all <- NULL
+  scores_all <- list()
   
   for (i in 1:number_replicates){
     
     predictions_i <- mcGet(pred_obj, "prob", i)
     target_i <- mcGet(resample_indexes, "test_target", i)
-    scores_all <- cbind(scores_all, computeLogScore(prediction = predictions_i, target = target_i))
+    scores_all[[i]] <- computeLogScore(prediction = predictions_i, target = target_i)
     
   }
   
+  class(scores_all) <- "multiClassScores"
   return(scores_all)
   
 } 
