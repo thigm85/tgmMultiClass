@@ -3,15 +3,15 @@ context("mappingIndexes")
 test_that("mappingIndexes works as expected", {
   
   mapping <- data.frame(from = rep(1:5, times = 4), to = 1:20)
-  unit_index_matrix <- matrix(c(1,3,5), nrow = 3, ncol = 2)
+  unit_index_list <- list(c(1,3,5), c(1,3,5))
   
   expected <- NULL
   for (i in 1:2){
-    condition <- mapping[, "from"] %in% unit_index_matrix[,i]
-    expected <- cbind(expected, mapping[condition, "to"])
+    condition <- mapping[, "from"] %in% unit_index_list[[i]]
+    expected[[i]] <- mapping[condition, "to"]
   }
   
-  observed <- mappingIndexes(unit_index_matrix = unit_index_matrix, 
+  observed <- mappingIndexes(unit_index_list = unit_index_list, 
                              mapping_from = mapping$from, 
                              mapping_to = mapping$to)
   
@@ -49,9 +49,9 @@ test_that("startandard generateTestIndexes with 3way type works as expected", {
   obs_validation <- mcGet(indexes, "validation")
   obs_test <- mcGet(indexes, "test")
   ## number_replicates
-  expect_true((ncol(obs_training) == ncol(obs_validation)) & 
-                (ncol(obs_validation) == ncol(obs_test)) & 
-                (ncol(obs_test) == 4))
+  expect_true((length(obs_training) == length(obs_validation)) & 
+                (length(obs_validation) == length(obs_test)) & 
+                (length(obs_test) == 4))
   ## empty intersection
   for (i in 1:4){
     expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "validation", i)))
@@ -94,9 +94,9 @@ test_that("generateTestIndexes with 3way type and observational_unit works as ex
   obs_validation <- mcGet(indexes, "validation")
   obs_test <- mcGet(indexes, "test")
   ## number_replicates
-  expect_true((ncol(obs_training) == ncol(obs_validation)) & 
-                (ncol(obs_validation) == ncol(obs_test)) & 
-                (ncol(obs_test) == 4))
+  expect_true((length(obs_training) == length(obs_validation)) & 
+                (length(obs_validation) == length(obs_test)) & 
+                (length(obs_test) == 4))
   ## empty intersection
   for (i in 1:4){
     expect_false(any(mcGet(indexes, "training", i) %in% mcGet(indexes, "validation", i)))

@@ -1,2 +1,7 @@
 inst/scripts/ongoing.R
 .Rhistory
+.Rproj.user
+*.Rproj
+.Rbuildignore
+inst/extdata/SaveLoadUnitTest_*
+..Rcheck/

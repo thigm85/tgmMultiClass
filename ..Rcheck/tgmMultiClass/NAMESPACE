@@ -1,5 +1,0 @@
-S3method(mcGet,datasetResample)
-S3method(mcGet,multiClass)
-export(generateTestIndexes)
-export(mcGet)
-export(predict_r_vgam)

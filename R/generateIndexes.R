@@ -6,29 +6,30 @@
 #' mapping
 #' 
 #' @examples
+#' \dontrun{
 #' mapping <- data.frame(from = rep(1:5, times = 4), to = 1:20)
-#' unit_index_matrix <- matrix(c(1,3,5), nrow = 3, ncol = 2)
+#' unit_index_list <- list(c(1,3,5), c(1,3,5))
 #' 
-#' new_index_matrix <- mappingIndexes(unit_index_matrix = unit_index_matrix, 
+#' new_index_list <- mappingIndexes(unit_index_list = unit_index_list, 
 #'                                    mapping_from = mapping$from, 
 #'                                    mapping_to = mapping$to)
-mappingIndexes <- function(unit_index_matrix, 
+#' }                                    
+mappingIndexes <- function(unit_index_list, 
                            mapping_from, 
                            mapping_to){
   
-  unit_index_matrix <- as.matrix(unit_index_matrix)
-  number_columns <- ncol(unit_index_matrix)
+  number_columns <- length(unit_index_list)
   
   mapping <- data.frame(from = mapping_from,
                         to = mapping_to)
   
-  new_index_matrix <- NULL
+  new_index_list <- NULL
   for (i in 1:number_columns){
-    condition <- mapping[, "from"] %in% unit_index_matrix[,i]
-    new_index_matrix <- cbind(new_index_matrix, mapping[condition, "to"])
+    condition <- mapping[, "from"] %in% unit_index_list[[i]]
+    new_index_list[[i]] <- mapping[condition, "to"]
   }
   
-  return(new_index_matrix)
+  return(new_index_list)
 }
 
 generateIndexThreeWay <- function # Generate train, cv and test using simple three-way splits.
@@ -47,9 +48,9 @@ generateIndexThreeWay <- function # Generate train, cv and test using simple thr
   size_v = ceiling((prop_v/(prop_v + prop_test)) * (number_lines - size_train))
   size_test = number_lines - size_train - size_v
   
-  train_matrix <- matrix(integer(0), size_train, number_replicates)
-  v_matrix <- matrix(integer(0), size_v, number_replicates)
-  test_matrix <- matrix(integer(0), size_test, number_replicates)
+  train_list <- list()
+  validation_list <- list()
+  test_list <- list()
   
   for (i in 1:number_replicates){
     all = 1:number_lines
@@ -62,14 +63,14 @@ generateIndexThreeWay <- function # Generate train, cv and test using simple thr
                replace = FALSE)
     test = all[!(all %in% v)]
     
-    train_matrix[, i] <- train
-    v_matrix[, i] <- v
-    test_matrix[, i] <- test
+    train_list[[i]] <- train
+    validation_list[[i]] <- v
+    test_list[[i]] <- test
   }
   
-  result <- list(training = train_matrix,
-                 validation = v_matrix,
-                 test = test_matrix)
+  result <- list(training = train_list,
+                 validation = validation_list,
+                 test = test_list)
   
 }  
 
@@ -116,13 +117,13 @@ generateTestIndexes_threeWay <- function(dataset, options, observational_unit = 
                                      prop_test = parsed_options$prop_test, 
                                      number_lines = number_lines, 
                                      number_replicates = parsed_options$number_replicates)
-    indexes[["training"]] <- mappingIndexes(unit_index_matrix = indexes[["training"]], 
+    indexes[["training"]] <- mappingIndexes(unit_index_list = indexes[["training"]], 
                                             mapping_from = rows_and_units[["unit"]], 
                                             mapping_to = rows_and_units[["row"]])
-    indexes[["validation"]] <- mappingIndexes(unit_index_matrix = indexes[["validation"]], 
+    indexes[["validation"]] <- mappingIndexes(unit_index_list = indexes[["validation"]], 
                                               mapping_from = rows_and_units[["unit"]], 
                                               mapping_to = rows_and_units[["row"]])
-    indexes[["test"]] <- mappingIndexes(unit_index_matrix = indexes[["test"]], 
+    indexes[["test"]] <- mappingIndexes(unit_index_list = indexes[["test"]], 
                                         mapping_from = rows_and_units[["unit"]], 
                                         mapping_to = rows_and_units[["row"]])
   }
@@ -228,19 +229,19 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
     if (is.null(i)){
       return(x$training)  
     } else {
-      return(x$training[,i])
+      return(x$training[[i]])
     }
   } else if (attr == "validation"){
     if (is.null(i)){
       return(x$validation)  
     } else {
-      return(x$validation[,i])
+      return(x$validation[[i]])
     }
   } else if (attr == "test"){
     if (is.null(i)){
       return(x$test)  
     } else {
-      return(x$test[,i])
+      return(x$test[[i]])
     }
   } else if (attr == "type"){
     return(x$type)
@@ -253,8 +254,8 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
       stop("validation_target: provide index i.")  
     } else {
       validation <- x[["validation"]]
-      if (i >= 1 & i <= ncol(validation)){
-        result <- x[["target"]][validation[, i], ]
+      if (i >= 1 & i <= length(validation)){
+        result <- x[["target"]][validation[[i]], ]
         return(result)
       } else {
         stop("index i out of range.")
@@ -265,8 +266,8 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
       stop("test_target: provide index i.")  
     } else {
       test <- x[["test"]]
-      if (i >= 1 & i <= ncol(test)){
-        result <- x[["target"]][test[, i], ]
+      if (i >= 1 & i <= length(test)){
+        result <- x[["target"]][test[[i]], ]
         return(result)
       } else {
         stop("index i out of range.")
@@ -315,19 +316,30 @@ saveResampleIndexes <- function(resample_indexes, folder_path, optional_name = N
     prefix <- paste(optional_name, "_resample_", sep="")
   }
   
-  write.table(x = mcGet(resample_indexes, "dataset"), file = file.path(folder_path, paste(prefix, "dataset.txt", sep="")), 
+  number_replicates <- mcGet(resample_indexes, "number_replicates")
+  
+  folder_name <- substr(x = prefix, start = 1, stop = nchar(prefix) - 1)
+  dir.create(file.path(folder_path, folder_name), showWarnings = FALSE)
+  
+  write.table(x = mcGet(resample_indexes, "dataset"), file = file.path(folder_path, folder_name, paste(prefix, "dataset.txt", sep="")), 
               quote = FALSE, sep = "\t", row.names = FALSE)
-  write.table(x = mcGet(resample_indexes, "target"), file = file.path(folder_path, paste(prefix, "target.txt", sep="")), 
+  write.table(x = mcGet(resample_indexes, "target"), file = file.path(folder_path, folder_name, paste(prefix, "target.txt", sep="")), 
               quote = FALSE, sep = "\t", row.names = FALSE)
-  write.table(x = mcGet(resample_indexes, "training"), file = file.path(folder_path, paste(prefix, "training.txt", sep="")), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write.table(x = mcGet(resample_indexes, "validation"), file = file.path(folder_path, paste(prefix, "validation.txt", sep="")), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write.table(x = mcGet(resample_indexes, "test"), file = file.path(folder_path, paste(prefix, "test.txt", sep="")), 
-              quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
-  write(x = mcGet(resample_indexes, "type"), file = file.path(folder_path, paste(prefix, "type.txt", sep="")), ncolumns = 1)
-  write(x = mcGet(resample_indexes, "tag"), file = file.path(folder_path, paste(prefix, "tag.txt", sep="")), ncolumns = 1)
-  write(x = mcGet(resample_indexes, "number_replicates"), file = file.path(folder_path, paste(prefix, "number_replicates.txt", sep="")), ncolumns = 1)
+  for (i in 1:number_replicates){
+    write.table(x = mcGet(resample_indexes, "training", i), file = file.path(folder_path, folder_name, paste(prefix, "training_", i, ".txt", sep="")), 
+                quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  }
+  for (i in 1:number_replicates){
+    write.table(x = mcGet(resample_indexes, "validation", i), file = file.path(folder_path, folder_name, paste(prefix, "validation_", i, ".txt", sep="")), 
+                quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  }
+  for (i in 1:number_replicates){
+    write.table(x = mcGet(resample_indexes, "test", i), file = file.path(folder_path, folder_name, paste(prefix, "test_", i, ".txt", sep="")), 
+                quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
+  }
+  write(x = mcGet(resample_indexes, "type"), file = file.path(folder_path, folder_name, paste(prefix, "type.txt", sep="")), ncolumns = 1)
+  write(x = mcGet(resample_indexes, "tag"), file = file.path(folder_path, folder_name, paste(prefix, "tag.txt", sep="")), ncolumns = 1)
+  write(x = number_replicates, file = file.path(folder_path, folder_name, paste(prefix, "number_replicates.txt", sep="")), ncolumns = 1)
   
 }
 
@@ -340,23 +352,34 @@ loadResampleIndexes <- function(folder_path, optional_name = NULL){
     prefix <- paste(optional_name, "_resample_", sep="")
   }
   
+  folder_name <- substr(x = prefix, start = 1, stop = nchar(prefix) - 1)
+  
   number_replicates <- scan(file = file.path(folder_path, paste(prefix, "number_replicates.txt", sep="")), 
                             what = double(), quiet = TRUE)
   
   test_indexes <- list()
-  test_indexes$dataset <- read.delim(file = file.path(folder_path, paste(prefix, "dataset.txt", sep="")), 
+  test_indexes$dataset <- read.delim(file = file.path(folder_path, folder_name, paste(prefix, "dataset.txt", sep="")), 
                                      header = TRUE, sep = "\t")
-  test_indexes$target <- read.delim(file = file.path(folder_path, paste(prefix, "target.txt", sep="")), 
+  test_indexes$target <- read.delim(file = file.path(folder_path, folder_name, paste(prefix, "target.txt", sep="")), 
                                      header = TRUE, sep = "\t")
-  test_indexes$training <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "training.txt", sep="")), 
-                                  header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
-  test_indexes$validation <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "validation.txt", sep="")), 
-                                     header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
-  test_indexes$test <- matrix(unlist(read.delim(file = file.path(folder_path, paste(prefix, "test.txt", sep="")), 
-                                     header = FALSE, sep = "\t")), dimnames = NULL, ncol = number_replicates)
-  test_indexes$type <- scan(file = file.path(folder_path, paste(prefix, "type.txt", sep="")), 
+  test_indexes$training <- list()
+  for (i in 1:number_replicates){
+    test_indexes$training[[i]] <- as.numeric(unlist(read.delim(file = file.path(folder_path, folder_name, paste(prefix, "training_", i, ".txt", sep="")), 
+                                                        header = FALSE, sep = "\t")))
+  }
+  test_indexes$validation <- list()
+  for (i in 1:number_replicates){
+    test_indexes$validation[[i]] <- as.numeric(unlist(read.delim(file = file.path(folder_path, folder_name, paste(prefix, "validation_", i, ".txt", sep="")), 
+                                       header = FALSE, sep = "\t")))
+  }  
+  test_indexes$test <- list()
+  for (i in 1:number_replicates){
+    test_indexes$test[[i]] <- as.numeric(unlist(read.delim(file = file.path(folder_path, folder_name, paste(prefix, "test_", i, ".txt", sep="")), 
+                                       header = FALSE, sep = "\t")))
+  }  
+  test_indexes$type <- scan(file = file.path(folder_path, folder_name, paste(prefix, "type.txt", sep="")), 
                             what = character(), quiet = TRUE)
-  test_indexes$tag <- scan(file = file.path(folder_path, paste(prefix, "tag.txt", sep="")), 
+  test_indexes$tag <- scan(file = file.path(folder_path, folder_name, paste(prefix, "tag.txt", sep="")), 
                             what = character(), quiet = TRUE)
   test_indexes$number_replicates <- number_replicates
   class(test_indexes) <- "datasetResample"
