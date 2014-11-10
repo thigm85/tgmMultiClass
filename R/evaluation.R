@@ -123,10 +123,13 @@ PickBestValidationModel <- function(validation_metric_matrix){
 #' @export
 SummaryValidationMetric <- function(tune_grid, validation_metric_matrix, 
                                     replicate_index, previous_summary = NULL){
+  
+  new_matrix <- cbind(replicate_index, tune_grid, 
+                      as.numeric(colMeans(validation_metric_matrix, na.rm = TRUE)))
+  colnames(new_matrix) <- c("Replicate", colnames(tune_grid), "metric")
+  
   summary <- rbind(previous_summary, 
-                   cbind(replicate_index, tune_grid, 
-                         as.numeric(colMeans(validation_metric_matrix, na.rm = TRUE))))
-  colnames(summary) <- c("Replicate", colnames(tune_grid), "metric")
+                   new_matrix)
   
   return(summary)
   
