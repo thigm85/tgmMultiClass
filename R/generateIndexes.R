@@ -308,6 +308,7 @@ checkAnyResampleIndexesExists <- function(folder_path){
 }
 
 #' Save a resample_indexes object into txt files.
+#' @export
 saveResampleIndexes <- function(resample_indexes, folder_path, optional_name = NULL){
   
   if (is.null(optional_name)){
@@ -344,6 +345,7 @@ saveResampleIndexes <- function(resample_indexes, folder_path, optional_name = N
 }
 
 #' Load a resample_indexes object from txt files.
+#' @export
 loadResampleIndexes <- function(folder_path, optional_name = NULL){
 
   if (is.null(optional_name)){
