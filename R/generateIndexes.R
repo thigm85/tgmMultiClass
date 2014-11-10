@@ -346,7 +346,7 @@ saveResampleIndexes <- function(resample_indexes, folder_path, optional_name = N
 
 #' Load a resample_indexes object from txt files.
 #' @export
-loadResampleIndexes <- function(folder_path, optional_name = NULL){
+loadResampleIndexes <- function(folder_path, optional_name = NULL, stringsAsFactors = FALSE){
 
   if (is.null(optional_name)){
     prefix <- "resample_"
@@ -361,7 +361,7 @@ loadResampleIndexes <- function(folder_path, optional_name = NULL){
   
   test_indexes <- list()
   test_indexes$dataset <- read.delim(file = file.path(folder_path, folder_name, paste(prefix, "dataset.txt", sep="")), 
-                                     header = TRUE, sep = "\t")
+                                     header = TRUE, sep = "\t", stringsAsFactors = stringsAsFactors)
   test_indexes$target <- read.delim(file = file.path(folder_path, folder_name, paste(prefix, "target.txt", sep="")), 
                                      header = TRUE, sep = "\t")
   test_indexes$training <- list()
