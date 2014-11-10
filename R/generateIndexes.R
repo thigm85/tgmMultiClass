@@ -356,7 +356,7 @@ loadResampleIndexes <- function(folder_path, optional_name = NULL){
   
   folder_name <- substr(x = prefix, start = 1, stop = nchar(prefix) - 1)
   
-  number_replicates <- scan(file = file.path(folder_path, paste(prefix, "number_replicates.txt", sep="")), 
+  number_replicates <- scan(file = file.path(folder_path, folder_name, paste(prefix, "number_replicates.txt", sep="")), 
                             what = double(), quiet = TRUE)
   
   test_indexes <- list()
