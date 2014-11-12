@@ -135,3 +135,160 @@ SummaryValidationMetric <- function(tune_grid, validation_metric_matrix,
   return(summary)
   
 }
+
+#' Summarize results from the validation step
+#' 
+#' @export
+summarizeValidation.multiClass <- function(fitted_model, ...){
+  
+  summary_validation <- mcGet(fitted_model, "summary_validation")
+  
+  if (is.null(summary_validation)){
+    return(NULL)    
+  }
+  
+  parameter_names <- mcGet(fitted_model, "summary_validation", i = "parameter_names") 
+  
+  aggregated_over_replicates <- summary_validation %>%
+    s_group_by(parameter_names) %>%
+    summarise(metric = mean(metric, na.rm = TRUE))
+  
+  plots <- list()
+  optimal_parameters <- NULL
+  joint_data_to_plot <- NULL
+  
+  count <- 0
+  
+  for (parameter in parameter_names){
+    
+    count <- count + 1
+    
+    data_to_plot <- aggregated_over_replicates %>% 
+      s_group_by(parameter) %>%
+      summarise(metric = max(metric, na.rm = TRUE))
+    original_colnames <- colnames(data_to_plot)
+    colnames(data_to_plot) <- c("x", "y")
+    
+    plot_obj <- ggplot(data_to_plot) + 
+      geom_line(aes(x = x, y = y)) + 
+      geom_point(aes(x = x, y = y)) +
+      labs(x = original_colnames[1], y = original_colnames[2], title = parameter)
+    
+    optimal_value <- data_to_plot[which.max(x = data_to_plot[,2]), 1]
+    
+    plots[[count]] <- plot_obj
+    optimal_parameters <- c(optimal_parameters, optimal_value)
+    
+    joint_data_to_plot <- rbind(joint_data_to_plot, cbind(parameter, data_to_plot))
+    
+  }
+  
+  names(optimal_parameters) <- parameter_names
+  
+  joint_plot <- ggplot(joint_data_to_plot) + 
+    geom_line(aes(x = x, y = y)) + 
+    geom_point(aes(x = x, y = y)) +
+    facet_wrap( ~ parameter, scales = "free_x")
+  
+  result <- list(plots = plots,
+                 optimal_parameters = optimal_parameters,
+                 parameter_names = parameter_names,
+                 joint_plot = joint_plot)
+  class(result) <- "summarizedValidation"
+  
+  return(result)
+  
+}
+
+mcGet.summarizedValidation <- function(x, attr, ...){
+  if (attr == "joint_plot"){ # Joint plot of the parameters
+    return(x[["joint_plot"]])
+  } else if (attr == "optimal_parameters"){ # Optimal parameters
+    return(x[["optimal_parameters"]])
+  } else {
+    stop(attr, " not found.")
+  }
+}
+
+#' Plot method for \code{summarizedValidation} class objects
+plot.summarizedValidation <- function(x, y = NULL, ...){
+  print(mcGet(x, "joint_plot"))
+}
+
+#' Print method for \code{summarizedValidation} class objects
+print.summarizedValidation <- function(x, ...){
+  print(mcGet(x, "optimal_parameters"))
+}
+
+#' Summary method for \code{summarizedValidation} class objects
+summary.summarizedValidation <- function(object, ...){
+  print(object)
+  plot(object)
+}
+
+#' Build calibration plots for a \code{multiClass} object
+#' 
+#' @export
+checkCalibration <- function(fitted_model, resample_indexes, number_bins){
+  
+  if (!(inherits(fitted_model, "multiClass") & 
+          inherits(resample_indexes, "datasetResample"))){
+    stop("'fitted_model' needs to be a 'multiClass' object and 'resample_indexes' needs to be a 'datasetResample'")
+  }
+  
+  number_replicates <- mcGet(fitted_model, "number_replicates")
+  
+  joint_pred_probs <- NULL
+  joint_target <- NULL
+  for (i in 1:number_replicates){ 
+    joint_pred_probs <- rbind(joint_pred_probs, mcGet(fitted_model, "prob", i))
+    joint_target <- rbind(joint_target, mcGet(resample_indexes, "test_target", i))
+  }
+  
+  number_classes <- mcGet(fitted_model, "number_classes")
+  
+  calibration_objects <- list()
+  plot_calibration_points <- list()
+  plot_smooth_calibration <- list()
+  for (i in 1:number_classes){
+    
+    pred_prob_i <- joint_pred_probs[, i]
+    
+    cuts <- quantile(x = pred_prob_i, probs = seq(0, 1, length.out = number_bins + 1))
+    pred_prob_bins <- cut(pred_prob_i, breaks = unique(cuts))
+    pred_points <- tapply(pred_prob_i, pred_prob_bins, mean, na.rm=TRUE)
+    
+    bin_sums <- NULL
+    for (j in 1:number_classes){
+      bin_sums <- cbind(bin_sums, tapply(joint_target[, j], pred_prob_bins, sum, na.rm=TRUE))  
+    }
+    
+    
+    calibration_objects[[i]] <- data.frame(prob_pred = pred_points, 
+                                           empirical_prob = bin_sums[,i]/rowSums(bin_sums))  
+    
+    
+    plot_calibration_points[[i]] <- ggplot(calibration_objects[[i]]) + 
+      geom_point(aes(x = prob_pred, y = empirical_prob)) + 
+      labs(x = "Predicted Prob.", y = "Empirical Prob.") +
+      geom_abline(intercept = 0, slope = 1)
+    
+    data_to_plot <- data.frame(pred = joint_pred_probs[,i], obs = joint_target[,i])
+    plot_smooth_calibration[[i]] <- ggplot(data_to_plot, aes(x = pred, y = obs)) + 
+      stat_smooth(method = "glm", formula = y ~ ns(x, 2), family = "binomial") + 
+      xlim(range(calibration_objects[[i]][, "prob_pred"])) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_point(data = calibration_objects[[i]], mapping = aes(x = prob_pred, empirical_prob)) + 
+      labs(x = "Predicted Prob.", y = "Empirical Prob.")
+    
+  }
+  
+  result <- list(calibration_objects = calibration_objects,
+                 class_labels = mcGet(resample_indexes, "class_labels"),
+                 plot_calibration_points = plot_calibration_points,
+                 plot_smooth_calibration = plot_smooth_calibration)
+  class(result) <- "multiClass_calibration"
+  
+  return(result)
+  
+}

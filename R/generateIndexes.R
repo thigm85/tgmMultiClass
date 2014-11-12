@@ -221,10 +221,18 @@ generateTestIndexes <- function(dataset, target_names, type = "3way",
 #' @export
 mcGet.datasetResample <- function(x, attr, i = NULL){
   
-  if (attr == "dataset"){
+  if (attr == "dataset"){ # dataset
+    
     return(x$dataset)
-  } else if (attr == "target"){
+    
+  } else if (attr == "target"){ # target
+    
     return(x$target)
+    
+  } else if (attr == "class_labels"){ # name of the classes
+    
+    return(colnames(x[["target"]]))
+    
   } else if (attr == "training"){
     if (is.null(i)){
       return(x$training)  

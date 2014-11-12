@@ -8,7 +8,9 @@ Description: Wrap functions for multi-class classification
 License: Whatever
 Suggests:
     testthat,
-    VGAM
-Imports:
-    methods
-LazyLoad: yes
+    VGAM,
+    dplyr,
+    ggplot2,
+    splines,
+    MASS
+

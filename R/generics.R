@@ -7,4 +7,8 @@
 #' @export
 mcGet <- function(x, attr, ...) UseMethod("mcGet")
 
+#' Generic function to modify object elements
 mcSet <- function(object, attr, new.attr, ...) UseMethod("mcSet")
+
+#' Generic function to summarize validation results
+summarizeValidation <- function(fitted_model, ...) UseMethod("summarizeValidation")

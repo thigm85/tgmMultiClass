@@ -1,5 +1,6 @@
 S3method(mcGet,datasetResample)
 S3method(mcGet,multiClass)
+S3method(summarizeValidation,multiClass)
 export(PickBestValidationModel)
 export(SummaryValidationMetric)
 export(computeLogScore)
