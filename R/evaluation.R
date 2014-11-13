@@ -140,6 +140,8 @@ SummaryValidationMetric <- function(tune_grid, validation_metric_matrix,
 #' 
 #' @export
 summarizeValidation.multiClass <- function(fitted_model, ...){
+
+  if (!require(ggplot2)) stop("Please, install ggplot2.")
   
   summary_validation <- mcGet(fitted_model, "summary_validation")
   
@@ -200,6 +202,9 @@ summarizeValidation.multiClass <- function(fitted_model, ...){
   
 }
 
+#' Get elements from \code{summarizedValidation} objects
+#' 
+#' @export
 mcGet.summarizedValidation <- function(x, attr, ...){
   if (attr == "joint_plot"){ # Joint plot of the parameters
     return(x[["joint_plot"]])
@@ -211,16 +216,22 @@ mcGet.summarizedValidation <- function(x, attr, ...){
 }
 
 #' Plot method for \code{summarizedValidation} class objects
+#' 
+#' @export
 plot.summarizedValidation <- function(x, y = NULL, ...){
   print(mcGet(x, "joint_plot"))
 }
 
 #' Print method for \code{summarizedValidation} class objects
+#' 
+#' @export
 print.summarizedValidation <- function(x, ...){
   print(mcGet(x, "optimal_parameters"))
 }
 
 #' Summary method for \code{summarizedValidation} class objects
+#' 
+#' @export
 summary.summarizedValidation <- function(object, ...){
   print(object)
   plot(object)
@@ -235,6 +246,10 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins){
           inherits(resample_indexes, "datasetResample"))){
     stop("'fitted_model' needs to be a 'multiClass' object and 'resample_indexes' needs to be a 'datasetResample'")
   }
+  
+  if (!require(ggplot2)) stop("Please, install ggplot2.")
+  if (!require(MASS)) stop("Please, install MASS.")
+  if (!require(splines)) stop("Please, install splines.")
   
   number_replicates <- mcGet(fitted_model, "number_replicates")
   
