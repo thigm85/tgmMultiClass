@@ -131,6 +131,7 @@ SummaryValidationMetric <- function(tune_grid, validation_metric_matrix,
   
   summary <- rbind(previous_summary, 
                    new_matrix)
+  class(summary) <- "summaryValidation"
   
   return(summary)
   

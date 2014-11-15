@@ -59,10 +59,15 @@ predict_r_vgam <- function(resample_indexes, ...){
   }
   
   class_labels <- colnames(probs)
-  result <- list(class_labels = class_labels, 
-                 prob = keep_probs, 
-                 datasetResample_tag = tag)
-  class(result) <- c("multiClass_vgam", "multiClass")
+  
+  result <- multiClass(class_labels = class_labels, 
+                       prob = keep_probs, 
+                       datasetResample_tag = tag)
+  
+#   result <- list(class_labels = class_labels, 
+#                  prob = keep_probs, 
+#                  datasetResample_tag = tag)
+  #class(result) <- c("multiClass_vgam", "multiClass")
   
   return(result)
   

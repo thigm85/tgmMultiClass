@@ -121,8 +121,8 @@ context("Load and Save")
 test_that("saveResampleIndexes and loadResampleIndexes works as expected", {
   
   # Load data
-  data <- read.table(file = system.file("extdata", "head_20_soccer_game.csv", package="tgmMultiClass"), 
-                     header = TRUE, sep = ";")
+  data <- read.table(file = system.file("extdata", "head_20_soccer_game.csv", package="tgmMultiClass"),  
+                     header = TRUE, sep = ";", stringsAsFactors = FALSE)
   
   # generate 4 dataset replications, where in each replication 20% of the data
   # will be assigned to a validation set and another 20% to a test set.
