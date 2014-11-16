@@ -233,31 +233,44 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
     
     return(colnames(x[["target"]]))
     
-  } else if (attr == "training"){
+  } else if (attr == "training"){ # training indexes
+    
     if (is.null(i)){
       return(x$training)  
     } else {
       return(x$training[[i]])
     }
-  } else if (attr == "validation"){
+    
+  } else if (attr == "validation"){ # validation indexes
+    
     if (is.null(i)){
       return(x$validation)  
     } else {
       return(x$validation[[i]])
     }
-  } else if (attr == "test"){
+    
+  } else if (attr == "test"){ # test indexes
+    
     if (is.null(i)){
       return(x$test)  
     } else {
       return(x$test[[i]])
     }
-  } else if (attr == "type"){
+    
+  } else if (attr == "type"){ # resampling type
+    
     return(x$type)
-  } else if (attr == "tag"){
+    
+  } else if (attr == "tag"){ # tag identifying a given resample object
+    
     return(x$tag)
-  } else if (attr == "number_replicates"){
+    
+  } else if (attr == "number_replicates"){ # number of replicates used
+    
     return(x$number_replicates)
-  } else if (attr == "validation_target"){
+    
+  } else if (attr == "validation_target"){ # target variables for a given validation set
+    
     if (is.null(i)){
       stop("validation_target: provide index i.")  
     } else {
@@ -269,7 +282,9 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
         stop("index i out of range.")
       }
     }
-  } else if (attr == "test_target"){
+    
+  } else if (attr == "test_target"){ # target variables for a given test set
+    
     if (is.null(i)){
       stop("test_target: provide index i.")  
     } else {
@@ -281,7 +296,8 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
         stop("index i out of range.")
       }
     }
-  } else {
+    
+  } else { # In case attr is not found
     stop(attr, " not found.")
   }
   

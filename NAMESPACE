@@ -1,5 +1,6 @@
 S3method(mcGet,datasetResample)
 S3method(mcGet,multiClass)
+S3method(mcGet,multiClassValidation)
 S3method(mcGet,summarizedValidation)
 S3method(plot,summarizedValidation)
 S3method(print,summarizedValidation)
