@@ -14,3 +14,8 @@ mcSet <- function(object, attr, new.attr, ...) UseMethod("mcSet")
 #' 
 #' @export
 summarizeValidation <- function(fitted_model, ...) UseMethod("summarizeValidation")
+
+#' Evaluate predicted class probabilities for a given score function.
+#' 
+#' @export
+evaluateProbClass <- function(pred_obj, resample_indexes, type, ignore_tag = FALSE, ...) UseMethod("evaluateProbClass")
