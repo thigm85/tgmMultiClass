@@ -208,6 +208,7 @@ evaluateProbClass.multiClass <- function(pred_obj, resample_indexes, type, ignor
 #' @seealso \code{\link{generateTestIndexes}}, 
 #'  \code{\link{summaryValidation}}, 
 #'  \code{\link{evaluateProbClass}}
+#' @export  
 multiClassValidationScores <- function(scores_list, resample_indexes, replicate_index, 
                                        score_type, tune_grid){
   

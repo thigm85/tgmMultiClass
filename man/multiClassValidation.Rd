@@ -42,7 +42,7 @@ used is stored because several validation sets are
 contained in the tagged object.
 }
 \seealso{
-\code{\link{generateTestIndexes}},
+\code{\link{generateTestIndexes}}
 
 Other tgmMultiClass.constructors:
 \code{\link{multiClassScores}};

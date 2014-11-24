@@ -23,7 +23,8 @@
 #' @return S3 object of class \code{multiClassValidation}.
 #' 
 #' @family tgmMultiClass constructors
-#' @seealso \code{\link{generateTestIndexes}}, 
+#' @seealso \code{\link{generateTestIndexes}}
+#' @export 
 multiClassValidation <- function(resample_indexes, prob, replicate_index, tune_grid){
   
   object <- list(class_labels = mcGet(resample_indexes, "class_labels"), 
