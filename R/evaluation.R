@@ -331,7 +331,7 @@ summarizeValidationMetric.multiClassValidationScores <- function(validation_scor
   
   summary <- rbind(previous_summary, 
                    new_matrix)
-  class(summary) <- "summaryValidation"
+  #class(summary) <- "summaryValidation"
   
   return(summary)
   
