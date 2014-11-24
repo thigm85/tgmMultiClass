@@ -30,6 +30,7 @@
 #' @seealso \code{\link{generateTestIndexes}}, 
 #'  \code{\link{summaryValidation}}, 
 #'  \code{\link{evaluateProbClass}}
+#' @export
 multiClass <- function(resample_indexes, prob, 
                        summary_validation = NULL, metric_name = NULL){
   
