@@ -17,17 +17,20 @@
 #'  c(predictions_class1, predictions_class2, ..., predictions_classK) for 
 #'  classification with K classes.
 #' @param replicate_index Integer number that indicates which validation set was used.
+#' @param tune_grid It is a matrix with named columns containing tuning parameters of the
+#'  model. Each row of the matrix represents tuning parameter values of a specific model.
 #' 
 #' @return S3 object of class \code{multiClassValidation}.
 #' 
 #' @family tgmMultiClass constructors
 #' @seealso \code{\link{generateTestIndexes}}, 
-multiClassValidation <- function(resample_indexes, prob, replicate_index){
+multiClassValidation <- function(resample_indexes, prob, replicate_index, tune_grid){
   
   object <- list(class_labels = mcGet(resample_indexes, "class_labels"), 
                  prob = prob, 
                  datasetResample_tag = mcGet(resample_indexes, "tag"),
-                 replicate_index = replicate_index)
+                 replicate_index = replicate_index,
+                 tune_grid = tune_grid)
   class(object) <- c("multiClassValidation")
   return(object)
   
@@ -71,6 +74,10 @@ mcGet.multiClassValidation <- function(x, attr, i = NULL){
   } else if (attr == "replicate_index"){ # Which validation set was used
     
     return(x[["replicate_index"]])
+    
+  } else if (attr == "tune_grid"){ # Which validation set was used
+    
+    return(x[["tune_grid"]])
     
   } else {
     stop(attr, " not found.")

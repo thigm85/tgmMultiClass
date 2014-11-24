@@ -19,3 +19,9 @@ summarizeValidation <- function(fitted_model, ...) UseMethod("summarizeValidatio
 #' 
 #' @export
 evaluateProbClass <- function(pred_obj, resample_indexes, type, ignore_tag = FALSE, ...) UseMethod("evaluateProbClass")
+
+#' Summarize Validation metric
+#' 
+#' @export
+summarizeValidationMetric <- function(validation_scores, 
+                                      previous_summary = NULL, ...) UseMethod("summarizeValidationMetric")
