@@ -2,7 +2,7 @@
 \alias{multiClassValidation}
 \title{Constructor for \code{multiClassValidation} objects}
 \usage{
-multiClassValidation(resample_indexes, prob, replicate_index)
+multiClassValidation(resample_indexes, prob, replicate_index, tune_grid)
 }
 \arguments{
   \item{resample_indexes}{S3 object of class
@@ -19,6 +19,11 @@ multiClassValidation(resample_indexes, prob, replicate_index)
 
   \item{replicate_index}{Integer number that indicates
   which validation set was used.}
+
+  \item{tune_grid}{It is a matrix with named columns
+  containing tuning parameters of the model. Each row of
+  the matrix represents tuning parameter values of a
+  specific model.}
 }
 \value{
 S3 object of class \code{multiClassValidation}.
@@ -39,6 +44,9 @@ contained in the tagged object.
 \seealso{
 \code{\link{generateTestIndexes}},
 
-Other tgmMultiClass.constructors: \code{\link{multiClass}}
+Other tgmMultiClass.constructors:
+\code{\link{multiClassScores}};
+\code{\link{multiClassValidationScores}};
+\code{\link{multiClass}}
 }
 

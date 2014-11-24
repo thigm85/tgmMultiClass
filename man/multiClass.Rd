@@ -52,6 +52,8 @@ same test set points.
 \code{\link{evaluateProbClass}}
 
 Other tgmMultiClass.constructors:
+\code{\link{multiClassScores}};
+\code{\link{multiClassValidationScores}};
 \code{\link{multiClassValidation}}
 }
 

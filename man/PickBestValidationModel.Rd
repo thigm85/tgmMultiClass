@@ -1,8 +1,8 @@
-\name{PickBestValidationModel}
-\alias{PickBestValidationModel}
+\name{pickBestValidationModel}
+\alias{pickBestValidationModel}
 \title{Select the best model based on computed metric}
 \usage{
-PickBestValidationModel(validation_metric_matrix)
+pickBestValidationModel(validation_scores)
 }
 \description{
 Select the best model based on computed metric
