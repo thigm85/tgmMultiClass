@@ -182,7 +182,7 @@ generateTestIndexes <- function(dataset, target_names, type = "3way",
                                 observational_unit = NULL, options, 
                                 include_dataset = TRUE, ...){
   
-  target <- dataset[, target_names]
+  target <- matrix(dataset[, target_names], ncol = length(target_names))
   
   type <- match.arg(type)
   
