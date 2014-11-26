@@ -3,6 +3,8 @@
 #' @return In case there is a mismatch it will give you a warning if
 #' \code{ignore_tag = TRUE} or trigger an \code{stop} in case 
 #' \code{ignore_tag = FALSE}.
+#' 
+#' @export
 checkTags <- function(resample_tag, prediction_tag, ignore_tag){
   if (resample_tag != prediction_tag){
     if (ignore_tag){

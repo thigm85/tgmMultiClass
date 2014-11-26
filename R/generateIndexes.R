@@ -233,6 +233,10 @@ mcGet.datasetResample <- function(x, attr, i = NULL){
     
     return(colnames(x[["target"]]))
     
+  } else if (attr == "target_name"){ # Name of the target variable, same of class_labels.
+    
+    return(colnames(x[["target"]]))
+    
   } else if (attr == "training"){ # training indexes
     
     if (is.null(i)){
