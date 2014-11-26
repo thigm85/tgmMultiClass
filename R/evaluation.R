@@ -135,6 +135,38 @@ multiClassScores <- function(scores_list, resample_indexes, score_type){
   
 }
 
+#' Extract info from \code{multiClassScores} objects
+#' 
+#' @export
+mcGet.multiClassScores <- function(x, attr, i = NULL){
+  
+  if (attr == "scores_list"){ # score values
+    
+    if (is.null(i)){
+      return(x[["scores_list"]])  
+    } else {
+      if (i >= 1 & i <= length(x[["scores_list"]])){
+        result <- x[["scores_list"]][[i]]
+        return(result)
+      } else {
+        stop("index i out of range.")
+      }
+    }
+    
+  } else if (attr == "score_type"){ # type of the score used
+    
+    return(x[["score_type"]])
+    
+  } else if (attr == "tag"){ # resample indexes tag
+    
+    return(x[["resample_tag"]])
+    
+  } else {
+    stop(attr, " not found.")
+  }
+  
+}
+
 #' Evaluate predicted class probabilities for a given score function.
 #' 
 #' @details Given a \code{datasetResample} object and a compatible 
