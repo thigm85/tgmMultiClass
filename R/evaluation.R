@@ -124,6 +124,8 @@ computeMultiClassScore <- function(prediction, target, type, ...){
 #' @seealso \code{\link{generateTestIndexes}}, 
 #'  \code{\link{summaryValidation}}, 
 #'  \code{\link{evaluateProbClass}}
+#'
+#' @export
 multiClassScores <- function(scores_list, resample_indexes, score_type){
   
   result <- list(scores_list = scores_list,
