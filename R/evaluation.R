@@ -351,18 +351,22 @@ evaluateProbClass.multiClassValidation <- function(pred_obj, resample_indexes, t
   
 }
 
+
+
 #' Summarize Validation metric
 #' 
 #' @export
 summarizeValidationMetric.multiClassValidationScores <- function(validation_scores, 
-                                                               previous_summary = NULL, ...){
+                                                                 previous_summary = NULL, 
+                                                                 summarize_function = function(x) mean(x, na.rm = TRUE), 
+                                                                 ...){
   
   replicate_index <- mcGet(validation_scores, "replicate_index")
   tune_grid <- mcGet(validation_scores, "tune_grid")
   scores_list <- mcGet(validation_scores, "scores_list")
   
   new_matrix <- cbind(replicate_index, tune_grid, 
-                      as.numeric(sapply(scores_list, FUN = mean, na.rm = TRUE)))
+                      as.numeric(sapply(scores_list, FUN = summarize_function)))
   colnames(new_matrix) <- c("Replicate", colnames(tune_grid), "metric")
   
   summary <- rbind(previous_summary, 
