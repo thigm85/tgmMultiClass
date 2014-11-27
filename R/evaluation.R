@@ -487,6 +487,8 @@ summary.summarizedValidation <- function(object, ...){
   plot(object)
 }
 
+## Transform the function below into a method. We have an equivalent one for uniCont
+
 #' Build calibration plots for a \code{multiClass} object
 #' 
 #' @export
