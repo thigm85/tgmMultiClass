@@ -380,11 +380,12 @@ summarizeValidationMetric.multiClassValidationScores <- function(validation_scor
 #' Select the best model based on computed metric
 #' 
 #' @export
-pickBestValidationModel <- function(validation_scores){
+pickBestValidationModel <- function(validation_scores, 
+                                    summarize_function = function(x) mean(x, na.rm = TRUE)){
   
   scores_list <- mcGet(validation_scores, "scores_list")
   
-  best_model <- which.max(sapply(scores_list, FUN = mean, na.rm = TRUE))
+  best_model <- which.max(as.numeric(sapply(scores_list, FUN = summarize_function)))
   return(best_model)
   
 }
