@@ -492,6 +492,8 @@ summary.summarizedValidation <- function(object, ...){
   plot(object)
 }
 
+
+
 ## Transform the function below into a method. We have an equivalent one for uniCont
 
 #' Build calibration plots for a \code{multiClass} object
@@ -560,6 +562,70 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins){
                  plot_calibration_points = plot_calibration_points,
                  plot_smooth_calibration = plot_smooth_calibration)
   class(result) <- "multiClass_calibration"
+  
+  return(result)
+  
+}
+
+#' @param x probability vector for the class of interst
+#' @param y Target matrix with K columns for K class problem
+#' @param which_class which class should be plotted.
+checkCalibrationBaseProb <- function(x, y, number_bins, which_class){
+  
+  if (!require(ggplot2)) stop("Please, install ggplot2.")
+  if (!require(MASS)) stop("Please, install MASS.")
+  if (!require(splines)) stop("Please, install splines.")
+  
+#   joint_pred_probs <- NULL
+#   joint_target <- NULL
+#   for (i in 1:number_replicates){ 
+#     joint_pred_probs <- rbind(joint_pred_probs, mcGet(fitted_model, "prob", i))
+#     joint_target <- rbind(joint_target, mcGet(resample_indexes, "test_target", i))
+#   }
+#   
+#   number_classes <- mcGet(fitted_model, "number_classes")
+#   
+#   calibration_objects <- list()
+#   plot_calibration_points <- list()
+#   plot_smooth_calibration <- list()
+#   for (i in 1:number_classes){
+    
+#     pred_prob_i <- joint_pred_probs[, i]
+    
+    cuts <- quantile(x = x, probs = seq(0, 1, length.out = number_bins + 1))
+    x_bins <- cut(x, breaks = unique(cuts))
+    x_points <- tapply(x, x_bins, mean, na.rm=TRUE)
+    
+    number_classes <- ncol(y)
+
+    bin_sums <- NULL
+    for (j in 1:number_classes){
+      bin_sums <- cbind(bin_sums, tapply(y[, j], x_bins, sum, na.rm=TRUE))  
+    }
+    
+    
+    calibration_objects <- data.frame(prob_pred = x_points, 
+                                      empirical_prob = bin_sums[,which_class]/rowSums(bin_sums))  
+    
+    
+    plot_calibration_points <- ggplot(calibration_objects) + 
+      geom_point(aes(x = prob_pred, y = empirical_prob)) + 
+      labs(x = "Predicted Prob.", y = "Empirical Prob.") +
+      geom_abline(intercept = 0, slope = 1)
+    
+    data_to_plot <- data.frame(pred = x, obs = y[,which_class])
+    plot_smooth_calibration <- ggplot(data_to_plot, aes(x = pred, y = obs)) + 
+      stat_smooth(method = "glm", formula = y ~ ns(x, 2), family = "binomial") + 
+      xlim(range(calibration_objects[, "prob_pred"])) +
+      geom_abline(intercept = 0, slope = 1) +
+      geom_point(data = calibration_objects, mapping = aes(x = prob_pred, empirical_prob)) + 
+      labs(x = "Predicted Prob.", y = "Empirical Prob.")
+    
+#   }
+  
+  result <- list(calibration_objects = calibration_objects,
+                 plot_calibration_points = plot_calibration_points,
+                 plot_smooth_calibration = plot_smooth_calibration)
   
   return(result)
   
