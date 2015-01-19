@@ -567,9 +567,13 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins){
   
 }
 
+#' Build calibration plots given x- and and y- axis
+#' 
 #' @param x probability vector for the class of interst
 #' @param y Target matrix with K columns for K class problem
 #' @param which_class which class should be plotted.
+#' 
+#' @export
 checkCalibrationBaseProb <- function(x, y, number_bins, which_class){
   
   if (!require(ggplot2)) stop("Please, install ggplot2.")
