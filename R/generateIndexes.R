@@ -131,6 +131,70 @@ generateTestIndexes_threeWay <- function(dataset, options, observational_unit = 
   return(result)
 }
 
+#--------------------------
+
+#' @param number_lines Number of lines in the dataset.
+#' @param number_replicates Number of replicates to generate.
+#' @param k How many parts the dataset should be divided.
+#' 
+generateIndexCVk <- function(number_lines, 
+                             number_replicates,
+                             k){
+  
+  train_list <- list()
+  validation_list <- list()
+  test_list <- list()
+  replication_vector <- c()
+  
+  block_size <- trunc(number_lines / k)
+  blocks_index <- 1:k
+  
+  elements <- 1:number_lines
+  blocks <- list()
+  for (i in 1:(k - 1)){
+    sampling <- sample(x = 1:length(elements), size = block_size, replace = FALSE)
+    blocks[[i]] <- elements[sampling]
+    elements <- elements[-sampling]
+  }
+  blocks[[k]] <- elements
+  
+  replication_index <- 1
+  
+  replication_vector <- c(replication_vector, rep(replication_index, times = k - 1))
+  
+  test_list[[replication_index]] <- blocks[[replication_index]]
+  
+  validation_blocks <- blocks_index[-replication_index]
+  for (validation_index in 1:length(validation_blocks)){
+    
+    training_blocks <- validation_blocks[-validation_index]
+    train_list[[validation_index]] <- blocks[[training_blocks[1]]]
+    for (i in 2:length(training_blocks)){
+      train_list[[validation_index]] <- c(train_list[[validation_index]], blocks[[training_blocks[i]]])
+    }
+    
+    validation_list[[validation_index]] <- blocks[[validation_blocks[validation_index]]] 
+    
+  }
+
+  result <- list(training = train_list,
+                 validation = validation_list,
+                 test = test_list,
+                 replication = replication_vector)
+  return(result)
+  
+}
+  
+xxx<-generateIndexCVk(number_lines = 26, number_replicates = 1, k = 5)  
+  
+
+
+
+
+
+
+#--------------------------
+
 #' Generate indexes necessary to evaluate models
 #' 
 #' Create dataset replications with training, validation and test sets.
