@@ -185,7 +185,7 @@ generateIndexCVk <- function(number_lines,
   
 }
   
-xxx<-generateIndexCVk(number_lines = 26, number_replicates = 1, k = 5)  
+#xxx<-generateIndexCVk(number_lines = 26, number_replicates = 1, k = 5)  
   
 
 
