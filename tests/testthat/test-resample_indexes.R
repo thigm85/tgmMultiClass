@@ -18,7 +18,64 @@ test_that("mappingIndexes works as expected", {
   expect_equal(object = observed, expected = expected)
   
 })
+
+context("generateIndex core")
+
+test_that("generateIndexCVk works as expected", {
   
+  number_lines = 26 
+  number_replicates = 1
+  k = 5
+  observed <- generateIndexCVk(number_lines = number_lines, 
+                               number_replicates = number_replicates, 
+                               k = k)
+  
+  ## number_replicates
+  expect_true((length(observed$training) == length(observed$validation)) & 
+                (length(observed$validation) == k-1))
+  
+  ## empty intersection
+  for (i in 1:(k-1)){
+    expect_false(any(observed$training[[i]] %in% observed$validation[[i]]))
+    expect_false(any(observed$training[[i]] %in% observed$test[[1]]))
+    expect_false(any(observed$validation[[i]] %in% observed$test[[1]]))
+  }
+  ## valid indexes
+  for (i in 1:(k-1)){
+    expect_true(all(1:number_lines %in% c(observed$training[[i]], observed$validation[[i]], observed$test[[1]])))
+  }
+
+  number_lines = 26 
+  number_replicates = 3
+  k = 5
+  observed <- generateIndexCVk(number_lines = number_lines, 
+                               number_replicates = number_replicates, 
+                               k = k)
+
+  # check replication indexes
+  expect_equal(observed$replication, rep(1:number_replicates, each = k - 1))
+
+  ## number_replicates
+  expect_true((length(observed$training) == length(observed$validation)) & 
+                (length(observed$validation) == (k-1)*number_replicates))
+  
+  ## empty intersection
+  for (j in 1:number_replicates){
+    for (i in 1:(k-1)){
+      expect_false(any(observed$training[[(j - 1)*(k-1) + i]] %in% observed$validation[[(j - 1)*(k-1) + i]]))
+      expect_false(any(observed$training[[(j - 1)*(k-1) + i]] %in% observed$test[[j]]))
+      expect_false(any(observed$validation[[(j - 1)*(k-1) + i]] %in% observed$test[[j]]))
+    }
+  }
+  ## valid indexes
+  for (j in 1:number_replicates){
+    for (i in 1:(k-1)){
+      expect_true(all(1:number_lines %in% c(observed$training[[(j - 1)*(k-1) + i]], observed$validation[[(j - 1)*(k-1) + i]], observed$test[[j]])))
+    }
+  }
+  
+})
+
 context("generateTestIndexes")
 
 test_that("startandard generateTestIndexes with 3way type works as expected", {

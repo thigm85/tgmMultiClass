@@ -133,13 +133,32 @@ generateTestIndexes_threeWay <- function(dataset, options, observational_unit = 
 
 #--------------------------
 
+
+#' Generate k cross-validation indexes
+#'
 #' @param number_lines Number of lines in the dataset.
-#' @param number_replicates Number of replicates to generate.
+#' @param number_replicates Number of replicates to generate, see details.
 #' @param k How many parts the dataset should be divided.
+#' 
+#' @details Check the implementation sketch 
+#' (https://www.evernote.com/shard/s95/sh/e033ac5b-5e18-438e-993d-d47d051b6228/9518a782b9b95988db4acc5149debfd0).
+#' The idea is to randomly divide that dataset into k mutually exclusive parts. 
+#' Each replicate will take one of those parts as a test set and use the other k - 1 parts 
+#' as training (k - 2 parts) and validation (1 part) sets. Because of that the maximum number 
+#' of replication allowed is equal to k. So, for each replicate we will have k - 1 different 
+#' training sets and k - 1 validation sets. Once we have the predictions of each model for 
+#' the k - 1 validation sets we will combine the scores over the k - 1 validation sets and 
+#' decide which model is the best. The best model will then be used to predict over the test set. 
+#' This same process will happen for each replication. 
 #' 
 generateIndexCVk <- function(number_lines, 
                              number_replicates,
                              k){
+  
+  if (number_replicates > k){
+    warning("'number_replicates' needs to be at most equal to 'k'. Setting number_replicates = k.")
+    number_replicates <- k
+  }
   
   train_list <- list()
   validation_list <- list()
@@ -158,22 +177,28 @@ generateIndexCVk <- function(number_lines,
   }
   blocks[[k]] <- elements
   
-  replication_index <- 1
-  
-  replication_vector <- c(replication_vector, rep(replication_index, times = k - 1))
-  
-  test_list[[replication_index]] <- blocks[[replication_index]]
-  
-  validation_blocks <- blocks_index[-replication_index]
-  for (validation_index in 1:length(validation_blocks)){
+  count <- 0
+  for (replication_index in 1:number_replicates){
     
-    training_blocks <- validation_blocks[-validation_index]
-    train_list[[validation_index]] <- blocks[[training_blocks[1]]]
-    for (i in 2:length(training_blocks)){
-      train_list[[validation_index]] <- c(train_list[[validation_index]], blocks[[training_blocks[i]]])
+    replication_vector <- c(replication_vector, rep(replication_index, times = k - 1))
+    
+    test_list[[replication_index]] <- blocks[[replication_index]]
+    
+    validation_blocks <- blocks_index[-replication_index]
+    
+    for (validation_index in 1:length(validation_blocks)){
+      
+      count <- count + 1
+      
+      training_blocks <- validation_blocks[-validation_index]
+      train_list[[count]] <- blocks[[training_blocks[1]]]
+      for (i in 2:length(training_blocks)){
+        train_list[[count]] <- c(train_list[[count]], blocks[[training_blocks[i]]])
+      }
+      
+      validation_list[[count]] <- blocks[[validation_blocks[validation_index]]] 
+      
     }
-    
-    validation_list[[validation_index]] <- blocks[[validation_blocks[validation_index]]] 
     
   }
 
@@ -185,14 +210,6 @@ generateIndexCVk <- function(number_lines,
   
 }
   
-#xxx<-generateIndexCVk(number_lines = 26, number_replicates = 1, k = 5)  
-  
-
-
-
-
-
-
 #--------------------------
 
 #' Generate indexes necessary to evaluate models
