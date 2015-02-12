@@ -499,7 +499,7 @@ summary.summarizedValidation <- function(object, ...){
 #' Build calibration plots for a \code{multiClass} object
 #' 
 #' @export
-checkCalibration <- function(fitted_model, resample_indexes, number_bins){
+checkCalibration <- function(fitted_model, resample_indexes, number_bins, order_smooth = 2){
   
   if (!(inherits(fitted_model, "multiClass") & 
           inherits(resample_indexes, "datasetResample"))){
@@ -549,7 +549,7 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins){
     
     data_to_plot <- data.frame(pred = joint_pred_probs[,i], obs = joint_target[,i])
     plot_smooth_calibration[[i]] <- ggplot(data_to_plot, aes(x = pred, y = obs)) + 
-      stat_smooth(method = "glm", formula = y ~ ns(x, 2), family = "binomial") + 
+      stat_smooth(method = "glm", formula = y ~ ns(x, order_smooth), family = "binomial") + 
       xlim(range(calibration_objects[[i]][, "prob_pred"])) +
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = calibration_objects[[i]], mapping = aes(x = prob_pred, empirical_prob)) + 
@@ -574,7 +574,7 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins){
 #' @param which_class which class should be plotted.
 #' 
 #' @export
-checkCalibrationBaseProb <- function(x, y, number_bins, which_class){
+checkCalibrationBaseProb <- function(x, y, number_bins, which_class, order_smooth = 2){
   
   if (!require(ggplot2)) stop("Please, install ggplot2.")
   if (!require(MASS)) stop("Please, install MASS.")
@@ -619,7 +619,7 @@ checkCalibrationBaseProb <- function(x, y, number_bins, which_class){
     
     data_to_plot <- data.frame(pred = x, obs = y[,which_class])
     plot_smooth_calibration <- ggplot(data_to_plot, aes(x = pred, y = obs)) + 
-      stat_smooth(method = "glm", formula = y ~ ns(x, 2), family = "binomial") + 
+      stat_smooth(method = "glm", formula = y ~ ns(x, order_smooth), family = "binomial") + 
       xlim(range(calibration_objects[, "prob_pred"])) +
       geom_abline(intercept = 0, slope = 1) +
       geom_point(data = calibration_objects, mapping = aes(x = prob_pred, empirical_prob)) + 
