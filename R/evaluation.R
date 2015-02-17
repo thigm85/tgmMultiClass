@@ -499,7 +499,8 @@ summary.summarizedValidation <- function(object, ...){
 #' Build calibration plots for a \code{multiClass} object
 #' 
 #' @export
-checkCalibration <- function(fitted_model, resample_indexes, number_bins, order_smooth = 2){
+checkCalibration <- function(fitted_model, resample_indexes, number_bins, 
+                             order_smooth = 2, replicate_indexes = NULL){
   
   if (!(inherits(fitted_model, "multiClass") & 
           inherits(resample_indexes, "datasetResample"))){
@@ -514,7 +515,12 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins, order_
   
   joint_pred_probs <- NULL
   joint_target <- NULL
-  for (i in 1:number_replicates){ 
+  
+  if (is.null(replicate_indexes)){
+    replicate_indexes <- 1:number_replicates
+  }
+  
+  for (i in replicate_indexes){ 
     joint_pred_probs <- rbind(joint_pred_probs, mcGet(fitted_model, "prob", i))
     joint_target <- rbind(joint_target, mcGet(resample_indexes, "test_target", i))
   }
