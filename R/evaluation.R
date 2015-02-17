@@ -404,6 +404,15 @@ summarizeValidation.multiClass <- function(fitted_model, ...){
     return(NULL)    
   }
   
+  #--- getting optimal model for each replication
+  optimal_by_replication <- NULL
+  for (i in unique(summary_validation[, "Replicate"])){
+    temp <- subset(summary_validation, Replicate == i)
+    optimal_by_replication <- rbind(optimal_by_replication, 
+                                    temp[which.max(temp[, "metric"]), ])
+  }
+  #---
+  
   parameter_names <- mcGet(fitted_model, "summary_validation", i = "parameter_names") 
   
   aggregated_over_replicates <- summary_validation %>%
@@ -450,7 +459,8 @@ summarizeValidation.multiClass <- function(fitted_model, ...){
   result <- list(plots = plots,
                  optimal_parameters = optimal_parameters,
                  parameter_names = parameter_names,
-                 joint_plot = joint_plot)
+                 joint_plot = joint_plot,
+                 optimal_by_replication = optimal_by_replication)
   class(result) <- "summarizedValidation"
   
   return(result)
@@ -465,6 +475,8 @@ mcGet.summarizedValidation <- function(x, attr, ...){
     return(x[["joint_plot"]])
   } else if (attr == "optimal_parameters"){ # Optimal parameters
     return(x[["optimal_parameters"]])
+  } else if (attr == "optimal_by_replication"){ # Optimal by replication parameters
+    return(x[["optimal_by_replication"]])
   } else {
     stop(attr, " not found.")
   }
