@@ -542,9 +542,10 @@ checkCalibration <- function(fitted_model, resample_indexes, number_bins, order_
                                            empirical_prob = bin_sums[,i]/rowSums(bin_sums))  
     
     
-    plot_calibration_points[[i]] <- ggplot(calibration_objects[[i]]) + 
-      geom_point(aes(x = prob_pred, y = empirical_prob)) + 
+    plot_calibration_points[[i]] <- ggplot(calibration_objects[[i]], aes(x = prob_pred, y = empirical_prob)) + 
+      geom_point() + 
       labs(x = "Predicted Prob.", y = "Empirical Prob.") +
+      stat_smooth(method = "lm", formula = y ~ ns(x, order_smooth)) + 
       geom_abline(intercept = 0, slope = 1)
     
     data_to_plot <- data.frame(pred = joint_pred_probs[,i], obs = joint_target[,i])
