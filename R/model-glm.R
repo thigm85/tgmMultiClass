@@ -37,7 +37,7 @@
 #' @export
 predict_r_glm_prob <- function(resample_indexes, verbose = TRUE, number_of_cores = NULL, ...){
   
-  data <- mcGet(resample_indexes, "dataset")
+  # data <- mcGet(resample_indexes, "dataset")
   
   tag <- mcGet(resample_indexes, "tag")
   
@@ -79,6 +79,7 @@ trainAndPredict_glm_prob <- function(index, resample_indexes, verbose, number_re
     print(paste("Iteration: ", index, "/", number_replications, sep = ""))
   }
   
+  data <- mcGet(resample_indexes, "dataset")
   training_data <- data[c(mcGet(resample_indexes, "training", index), mcGet(resample_indexes, "validation", index)), ]
   
   fit <- do.call(what = "glm", args = list(data = training_data, ...))
