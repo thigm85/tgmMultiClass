@@ -88,7 +88,7 @@ trainAndPredict_glm_prob <- function(index, resample_indexes, verbose, number_re
   
   categorical_variables <- names(fit$xlevels)
   for (i in categorical_variables){
-    fit$xlevels[[i]] <- union(fit$xlevels[[i]], levels(test_data[[i]]))  
+    fit$xlevels[[i]] <- union(fit$xlevels[[i]], levels(as.factor(test_data[[i]])))  
   }
   
   probs <- predict(fit, newdata = test_data, type = "response")  
