@@ -440,7 +440,7 @@ summarizeValidation.multiClass <- function(fitted_model, ...){
       geom_point(aes(x = x, y = y)) +
       labs(x = original_colnames[1], y = original_colnames[2], title = parameter)
     
-    optimal_value <- data_to_plot[which.max(x = data_to_plot[,2]), 1]
+    optimal_value <- data_to_plot[which.max(x = as.numeric(unlist(data_to_plot[,2]))), 1]
     
     plots[[count]] <- plot_obj
     optimal_parameters <- c(optimal_parameters, optimal_value)
