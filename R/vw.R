@@ -114,19 +114,19 @@ RvwTest <- function(vw_fit, data_test_path, link_function = c("logistic")){
   return(result)
   
 }
-
-vw_fit <- RvwTrain(data_train_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw",
-                   loss_function = "logistic", 
-                   regressor_file = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/trained_model_file",
-                   holdout = FALSE,
-                   number_of_passes = 5,
-                   learning_rate = 0.5)#, 
-                   #ignore_features = c("a", "t", "c"),
-                   #invert_hash = TRUE)
-
-vw_test <- RvwTest(vw_fit = vw_fit,
-                   data_test_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw", 
-                   link_function = "logistic")
+# 
+# vw_fit <- RvwTrain(data_train_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw",
+#                    loss_function = "logistic", 
+#                    regressor_file = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/trained_model_file",
+#                    holdout = FALSE,
+#                    number_of_passes = 5,
+#                    learning_rate = 0.5)#, 
+#                    #ignore_features = c("a", "t", "c"),
+#                    #invert_hash = TRUE)
+# 
+# vw_test <- RvwTest(vw_fit = vw_fit,
+#                    data_test_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw", 
+#                    link_function = "logistic")
 # 
 # data <- readLines("~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw")
 
