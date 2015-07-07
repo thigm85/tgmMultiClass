@@ -351,8 +351,6 @@ evaluateProbClass.multiClassValidation <- function(pred_obj, resample_indexes, t
   
 }
 
-
-
 #' Summarize Validation metric
 #' 
 #' @export

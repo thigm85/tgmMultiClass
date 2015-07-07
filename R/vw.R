@@ -10,10 +10,12 @@
 #' @param holdout If set to FALSE then there is no holdout data in multiple passes. Default to FALSE.
 #' @param cache_file Cache file path. It is necessary in case of multiple passes.
 #' @param number_of_passes How many passes through the data. Default to 1.
+#' @param learning_rate Learning rate used in the OGD. 
+#' @param bits Number of bits in the feature table.
 RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_features = NULL,
                      regressor_file = NULL, readable_model = FALSE, invert_hash = FALSE,
                      holdout = FALSE, cache_file = NULL, number_of_passes = 1, learning_rate = NULL,
-                     bits = 18){
+                     bits = 18, l1 = NULL){
 
   # training data
   args_vector <- paste("-d ", data_train_path, sep = "")
@@ -55,6 +57,11 @@ RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_feat
     args_vector <- c(args_vector, paste("-l ", as.numeric(learning_rate), sep = ""))  
   }
 
+  # L1 regularization parameter
+  if (!is.null(l1)){
+    args_vector <- c(args_vector, paste("--l1 ", as.numeric(l1), sep = ""))  
+  }
+  
   # file with regressor file
   regressor_option <- "-f "
   if (is.null(regressor_file)){
@@ -256,14 +263,9 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
     
     # generates a validation matrix
     metrics_tune_models <- foreach(index = 1:number_tune_models, .inorder=TRUE) %dopar% {
-      tuneModel(index = index, tuneGrid = tune_grid, verbose = verbose, 
+      tuneModel(index = index, tuneGrid = tune_grid, verbose = verbose, replicate_index = replicate_index,
                 data_train_path = data_train_path, data_test_path = data_validation_path, ...) 
     }
-#       metrics_tune_models <- list()
-#       for (index in 1:number_tune_models){
-#         metrics_tune_models[[index]] <- tuneModel(index = index, tuneGrid = tune_grid, verbose = verbose, 
-#                   data_train_path = data_train_path, data_test_path = data_validation_path, ...)
-#       }
   
   } else {
     
@@ -310,16 +312,27 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
   
 }
 
-tuneModelVerbose <- function(index, tuneGrid){
-  print(paste("Number of passes: ", tuneGrid[index, "number_of_passes"], 
-              ", Learning rate: ", tuneGrid[index, "learning_rate"], sep=""))
+tuneModelVerbose <- function(index, tuneGrid, replicate_index){
+  
+  parameter_names <- colnames(tuneGrid)
+  
+  result <- paste("Replicate index: ", replicate_index, sep = "")
+  result <- paste(result, ", Number of passes: ", tuneGrid[index, "number_of_passes"], sep = "")
+  result <- paste(result, ", Learning rate: ", tuneGrid[index, "learning_rate"], sep = "")
+  
+  if ("l1" %in% parameter_names){
+    result <- paste(result, ", L1 regularization: ", tuneGrid[index, "l1"], sep = "")
+  }
+  
+  print(result)
+  
 }
 
 #' Evaluate predictions according to some metric
-tuneModel <- function(index, tuneGrid, verbose, ...) 
+tuneModel <- function(index, tuneGrid, verbose, replicate_index, ...) 
 {
   if (verbose){ 
-    tuneModelVerbose(index = index, tuneGrid = tuneGrid)
+    tuneModelVerbose(index = index, tuneGrid = tuneGrid, replicate_index = replicate_index)
   }
   
   validation_predictions <- trainAndPredict(tuneGrid = tuneGrid[index, ], ...) 
@@ -381,19 +394,29 @@ tuneModel_Platt <- function(index, tuneGrid, verbose, data_train, data_calibrati
 trainAndPredict <- function(tuneGrid, data_train_path, data_test_path, link_function, 
                             loss_function, ...){
   
-  if (!all(dim(tuneGrid) == c(1,2))){
-    stop("Invalid dimension for a single tuneGrid row.")
-  }
+  parameter_names <- colnames(tuneGrid)
   
   regressor_file <- tempfile(tmpdir = ".")
   cache_file <- tempfile(tmpdir = ".")
-  
-    vw_fit <- RvwTrain(data_train_path, loss_function = loss_function, 
-                       regressor_file = regressor_file,
-                       cache_file = cache_file,
-                       number_of_passes = as.numeric(tuneGrid[, "number_of_passes"]),
-                       learning_rate = as.numeric(tuneGrid[, "learning_rate"]),
-                       ...)
+
+  call_args <- list(...)
+  call_args$data_train_path = data_train_path
+  call_args$loss_function = loss_function
+  call_args$regressor_file = regressor_file
+  call_args$cache_file = cache_file
+  call_args$number_of_passes = as.numeric(tuneGrid[, "number_of_passes"])
+  call_args$learning_rate = as.numeric(tuneGrid[, "learning_rate"])
+  if ("l1" %in% parameter_names){
+    call_args$l1 = as.numeric(tuneGrid[, "l1"])
+  }
+
+  vw_fit <- do.call("RvwTrain", args = call_args)
+#   vw_fit <- RvwTrain(data_train_path, loss_function = loss_function, 
+#                      regressor_file = regressor_file,
+#                      cache_file = cache_file,
+#                      number_of_passes = as.numeric(tuneGrid[, "number_of_passes"]),
+#                      learning_rate = as.numeric(tuneGrid[, "learning_rate"]),
+#                      ...)
   
   vw_test <- RvwTest(vw_fit = vw_fit,
                      data_test_path = data_test_path, 
@@ -403,16 +426,6 @@ trainAndPredict <- function(tuneGrid, data_train_path, data_test_path, link_func
   
   file.remove(regressor_file)
   file.remove(cache_file)
-  
-#   extra_pars <- list(...)
-#   data_test <- extra_pars[["data_test"]]
-#   
-#   if (inherits(prediction_obj, "try-error")){
-#     test_predictions <- rep(NA, nrow(test_data))
-#     class(test_predictions) <- "try-error"
-#   } else {
-#     test_predictions <- rgGet(prediction_obj, "pred")
-#   }
   
   return(test_predictions)
   
