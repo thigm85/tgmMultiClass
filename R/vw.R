@@ -205,12 +205,12 @@ predict_vw <- function(resample_indexes, tune_grid, metric_name = "log_score", v
       prediction_test[[i]] <- trainAndPredict(tuneGrid = tune_grid[best_model, ], 
                                               data_train_path = data_train_path, 
                                               data_test_path = data_test_path, ...)
-    } else if (regtree_loss == "logistic") {
+    } else if (loss_function == "logistic"){
       
       tune_grid_platt <- mcGet(validation_scores, "tune_grid")
       prediction_test[[i]] <- trainAndPredict_Platt(tuneGrid = tune_grid_platt[best_model, ], 
-                                                    data_train = data_train, data_test = data_test, 
-                                                    regtree_loss = regtree_loss,
+                                                    data_train_path = data_train_path, 
+                                                    data_test_path = data_test_path,
                                                     ...)
       
       
@@ -255,12 +255,12 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
   
   data_validation <- resample_indexes$dataset_vw[mcGet(resample_indexes, "validation", i=replicate_index)]
   data_validation_path <- tempfile(tmpdir = ".")
+
+  writeLines(data_train, data_train_path)
+  writeLines(data_validation, data_validation_path)
   
   if (!platt_calibration){
 
-    writeLines(data_train, data_train_path)
-    writeLines(data_validation, data_validation_path)
-    
     # generates a validation matrix
     metrics_tune_models <- foreach(index = 1:number_tune_models, .inorder=TRUE) %dopar% {
       tuneModel(index = index, tuneGrid = tune_grid, verbose = verbose, replicate_index = replicate_index,
@@ -274,20 +274,17 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
                                 size = length(data_train)*platt_train_calibration,
                                 replace = FALSE)
     platt_data_train <- data_train[-index_calibration] 
-    writeLines(platt_data_train, data_train_path)
+    platt_data_train_path <- tempfile(tmpdir = ".")
+    writeLines(platt_data_train, platt_data_train_path)
     
     platt_data_calibration <- data_train[index_calibration]
-    data_calibration_path <- tempfile(tmpdir = ".")
-    writeLines(platt_data_calibration, data_calibration_path)
+    platt_data_calibration_path <- tempfile(tmpdir = ".")
+    writeLines(platt_data_calibration, platt_data_calibration_path)
     
-    platt_data_validation <- data_validation  
-    writeLines(platt_data_validation, data_validation_path)
-    
-    # ok, platt method will be used
     platt_validation_obj <- foreach(index = 1:number_tune_models, .inorder=TRUE) %dopar% {
       tuneModel_Platt(index = index, tuneGrid = tune_grid, verbose = verbose, 
-                      data_train = data_train_path, data_calibration = data_calibration_path, 
-                      data_validation = data_validation_path, 
+                      data_train_path = data_train_path, data_validation_path = data_validation_path, 
+                      platt_data_train_path = platt_data_train_path, platt_data_calibration_path = platt_data_calibration_path, 
                       target_name = mcGet(resample_indexes, "target_name"), ...) 
     }    
     # here should contain the validation prediction list as before
@@ -297,7 +294,8 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
     colnames(platt_coefs) <- c("platt_intercept", "platt_slope")
     tune_grid <- cbind(tune_grid, platt_coefs)  
     
-    file.remove(data_calibration_path)
+    file.remove(platt_data_train_path)
+    file.remove(platt_data_calibration_path)
     
   } 
   
@@ -341,17 +339,19 @@ tuneModel <- function(index, tuneGrid, verbose, replicate_index, ...)
   
 }
 
-
-tuneModel_Platt <- function(index, tuneGrid, verbose, data_train, data_calibration, data_validation, target_name, ...) 
-{
+tuneModel_Platt <- function(index, tuneGrid, verbose, replicate_index, 
+                            data_train_path, data_validation_path, 
+                            platt_data_train_path, platt_data_calibration_path, 
+                            target_name, ...){
+  
   if (verbose){ 
-    tuneModelVerbose(index = index, tuneGrid = tuneGrid)
+    tuneModelVerbose(index = index, tuneGrid = tuneGrid, replicate_index = replicate_index)
   }
   
-  # train GBDT with training data and predict the calibration data
+  # train vw with training data and predict the calibration data
   calibration_predictions <- trainAndPredict(tuneGrid = tuneGrid[index, ], 
-                                             data_train = data_train, data_test = data_calibration,
-                                             ...)
+                                             data_train_path = platt_data_train_path, 
+                                             data_test_path = platt_data_calibration_path, ...)
   # convert to tree calibration predictions
   tree_calibration_predictions <- reverseProbMap(prob = calibration_predictions)
   
@@ -362,15 +362,15 @@ tuneModel_Platt <- function(index, tuneGrid, verbose, data_train, data_calibrati
   platt_coefs <- try(optiminPlattCoefs(sucess_target = sucess_target, 
                                        tree_predictions = tree_calibration_predictions))
   if (inherits(platt_coefs, "try-error")){
-    platt_coefs <- c(0, -2)
+    platt_coefs <- c(0, -1)
   }
   
   # train with both training and calibration data using optmized platt values and predict the validation data using trainAndPredict_Platt
   tuneGrid_index <- cbind(tuneGrid[index, ], 
                           platt_intercept = platt_coefs[1], platt_slope = platt_coefs[2])
   validation_predictions <- trainAndPredict_Platt(tuneGrid = tuneGrid_index, 
-                                                  data_train = rbind(data_train, data_calibration), 
-                                                  data_test = data_validation, ...)
+                                                  data_train_path = data_train_path, 
+                                                  data_test_path = data_validation_path, ...)
   
   # result should be a list containing the prediction for the validation set and also the platt optimized values
   result <- list(validation_predictions = validation_predictions, platt_coefs = platt_coefs)
@@ -411,12 +411,6 @@ trainAndPredict <- function(tuneGrid, data_train_path, data_test_path, link_func
   }
 
   vw_fit <- do.call("RvwTrain", args = call_args)
-#   vw_fit <- RvwTrain(data_train_path, loss_function = loss_function, 
-#                      regressor_file = regressor_file,
-#                      cache_file = cache_file,
-#                      number_of_passes = as.numeric(tuneGrid[, "number_of_passes"]),
-#                      learning_rate = as.numeric(tuneGrid[, "learning_rate"]),
-#                      ...)
   
   vw_test <- RvwTest(vw_fit = vw_fit,
                      data_test_path = data_test_path, 
@@ -432,31 +426,20 @@ trainAndPredict <- function(tuneGrid, data_train_path, data_test_path, link_func
 }
 
 #' @export
-trainAndPredict_Platt <- function(tuneGrid, ...){
+trainAndPredict_Platt <- function(tuneGrid, data_train_path, data_test_path, link_function, 
+                                  loss_function, ...){
   
-  if (!all(dim(tuneGrid) == c(1,6))){
-    stop("Invalid dimension for a single tuneGrid row.")
-  }
+  test_predictions <- trainAndPredict(tuneGrid = tuneGrid, 
+                                      data_train_path = data_train_path, 
+                                      data_test_path = data_test_path, 
+                                      link_function = link_function, 
+                                      loss_function = loss_function, ...)
   
-  prediction_obj <- try(Rgbdt(number_trees = as.numeric(tuneGrid[, "number_trees"]),
-                              number_leaf_nodes = as.numeric(tuneGrid[, "number_leaf_nodes"]),
-                              shrinkage = as.numeric(tuneGrid[, "shrinkage"]),
-                              sampling_rate = as.numeric(tuneGrid[, "sampling_rate"]),
-                              ...))
+  tree_predictions <- reverseProbMap(test_predictions)
+  test_predictions <- PlattMap(x = tree_predictions, 
+                               intercept = as.numeric(tuneGrid[, "platt_intercept"]), 
+                               slope = as.numeric(tuneGrid[, "platt_slope"]))
   
-  extra_pars <- list(...)
-  data_test <- extra_pars[["data_test"]]
-  
-  if (inherits(prediction_obj, "try-error")){
-    test_predictions <- rep(NA, nrow(test_data))
-    class(test_predictions) <- "try-error"
-  } else {
-    test_predictions <- rgGet(prediction_obj, "pred")
-    tree_predictions <- reverseProbMap(test_predictions)
-    test_predictions <- PlattMap(x = tree_predictions, 
-                                 intercept = as.numeric(tuneGrid[, "platt_intercept"]), 
-                                 slope = as.numeric(tuneGrid[, "platt_slope"]))
-  }
   
   return(test_predictions)
   
@@ -485,7 +468,7 @@ plattObjectiveFunction <- function(x, sucess_target, tree_predictions){
 #' @export
 optiminPlattCoefs <- function(sucess_target, tree_predictions){
   
-  opt_obj <- nlminb(start = c(0, -2), objective = plattObjectiveFunction, 
+  opt_obj <- nlminb(start = c(0, -1), objective = plattObjectiveFunction, 
                     sucess_target = sucess_target, tree_predictions = tree_predictions)
   
   return(as.numeric(opt_obj$par))
