@@ -282,7 +282,7 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
     writeLines(platt_data_calibration, platt_data_calibration_path)
     
     platt_validation_obj <- foreach(index = 1:number_tune_models, .inorder=TRUE) %dopar% {
-      tuneModel_Platt(index = index, tuneGrid = tune_grid, verbose = verbose, 
+      tuneModel_Platt(index = index, tuneGrid = tune_grid, verbose = verbose, replicate_index = replicate_index,
                       data_train_path = data_train_path, data_validation_path = data_validation_path, 
                       platt_data_train_path = platt_data_train_path, platt_data_calibration_path = platt_data_calibration_path, 
                       target_name = mcGet(resample_indexes, "target_name"), ...) 
