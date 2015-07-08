@@ -157,6 +157,13 @@ predict_vw <- function(resample_indexes, tune_grid, metric_name = "log_score", v
   library(doMC)
   library(foreach)
   
+  extra_args <- list(...)
+  if ("loss_function" %in% names(extra_args)){
+    loss_function <- extra_args$loss_function
+  } else {
+    stop("predict_vw: Please specify 'loss_function' argument.")
+  }
+  
   number_tune_models <- nrow(tune_grid)
   
   number_replicates <- mcGet(resample_indexes, "number_replicates")
