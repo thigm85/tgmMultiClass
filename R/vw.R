@@ -281,11 +281,14 @@ ComputeValidationPrediction <- function(replicate_index, resample_indexes,
     platt_data_calibration_path <- tempfile(tmpdir = ".")
     writeLines(platt_data_calibration, platt_data_calibration_path)
     
+    sucess_target_train <- as.numeric(resample_indexes$target[mcGet(resample_indexes, "training", i=replicate_index), mcGet(resample_indexes, "target_name")[1]])
+    sucess_target_calibration <- sucess_target_train[index_calibration]
+    
     platt_validation_obj <- foreach(index = 1:number_tune_models, .inorder=TRUE) %dopar% {
       tuneModel_Platt(index = index, tuneGrid = tune_grid, verbose = verbose, replicate_index = replicate_index,
                       data_train_path = data_train_path, data_validation_path = data_validation_path, 
                       platt_data_train_path = platt_data_train_path, platt_data_calibration_path = platt_data_calibration_path, 
-                      target_name = mcGet(resample_indexes, "target_name"), ...) 
+                      sucess_target = sucess_target_calibration, ...) 
     }    
     # here should contain the validation prediction list as before
     metrics_tune_models <- lapply(platt_validation_obj, FUN = function(x) x[["validation_predictions"]])
@@ -342,7 +345,7 @@ tuneModel <- function(index, tuneGrid, verbose, replicate_index, ...)
 tuneModel_Platt <- function(index, tuneGrid, verbose, replicate_index, 
                             data_train_path, data_validation_path, 
                             platt_data_train_path, platt_data_calibration_path, 
-                            target_name, ...){
+                            sucess_target, ...){
   
   if (verbose){ 
     tuneModelVerbose(index = index, tuneGrid = tuneGrid, replicate_index = replicate_index)
@@ -356,7 +359,7 @@ tuneModel_Platt <- function(index, tuneGrid, verbose, replicate_index,
   tree_calibration_predictions <- reverseProbMap(prob = calibration_predictions)
   
   # obtain target and tree predictions for the calibration points
-  sucess_target <- as.numeric(data_calibration[ , target_name[1]])
+  #sucess_target <- as.numeric(data_calibration[ , target_name[1]])
   
   # optimize and obtain platt_intercept and platt_slope
   platt_coefs <- try(optiminPlattCoefs(sucess_target = sucess_target, 
