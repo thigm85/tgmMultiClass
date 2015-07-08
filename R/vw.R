@@ -15,7 +15,7 @@
 RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_features = NULL,
                      regressor_file = NULL, readable_model = FALSE, invert_hash = FALSE,
                      holdout = FALSE, cache_file = NULL, number_of_passes = 1, learning_rate = NULL,
-                     bits = 18, l1 = NULL){
+                     bits = 18, l1 = NULL, rerun_l1 = FALSE){
 
   # training data
   args_vector <- paste("-d ", data_train_path, sep = "")
@@ -59,7 +59,17 @@ RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_feat
 
   # L1 regularization parameter
   if (!is.null(l1)){
-    args_vector <- c(args_vector, paste("--l1 ", as.numeric(l1), sep = ""))  
+    
+    if (rerun_l1){
+      args_vector_temp <- args_vector
+      args_vector_temp <- c(args_vector_temp, paste("--l1 ", as.numeric(l1), sep = ""))  
+      regressor_file_l1 <- tempfile(tmpdir = ".")
+      args_vector_temp <- c(args_vector_temp, paste("-f ", regressor_file_l1, sep = ""))
+      system2(command = "vw", args = args_vector_temp)
+    } else {
+      args_vector <- c(args_vector, paste("--l1 ", as.numeric(l1), sep = ""))  
+    }
+    
   }
   
   # file with regressor file
@@ -79,7 +89,15 @@ RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_feat
   } 
   args_vector <- c(args_vector, paste(regressor_option, regressor_file, sep = ""))
   
+  if (rerun_l1){
+    args_vector <- c(args_vector, paste("--feature_mask ", regressor_file_l1, sep = "")) 
+  }
+  
   system2(command = "vw", args = args_vector)
+  
+  if (rerun_l1){
+    file.remove(regressor_file_l1)
+  }
   
   result <- list(regressor_file = regressor_file,
                  data_train_path = data_train_path)
@@ -121,20 +139,22 @@ RvwTest <- function(vw_fit, data_test_path, link_function = c("logistic")){
   return(result)
   
 }
-# 
+ 
 # vw_fit <- RvwTrain(data_train_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw",
 #                    loss_function = "logistic", 
 #                    regressor_file = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/trained_model_file",
 #                    holdout = FALSE,
 #                    number_of_passes = 5,
-#                    learning_rate = 0.5)#, 
+#                    learning_rate = 0.5,
+#                    l1 = 1e-6,
+#                    rerun_l1 = TRUE)#, 
 #                    #ignore_features = c("a", "t", "c"),
 #                    #invert_hash = TRUE)
-# 
+#  
 # vw_test <- RvwTest(vw_fit = vw_fit,
 #                    data_test_path = "~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw", 
 #                    link_function = "logistic")
-# 
+ 
 # data <- readLines("~/drive/projects/yahoo/2015-2/click_vw_experiments/data/20150501_20150629-click_data_vw")
 
 #' multi-class prediction probability with Vowpal-Wabbit
