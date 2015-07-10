@@ -651,3 +651,41 @@ checkCalibrationBaseProb <- function(x, y, number_bins, which_class, order_smoot
   return(result)
   
 }
+
+#' @export
+compareModelScores <- function(scores1, scores2){
+  
+  if (!((inherits(scores1, "multiClassScores")) & (inherits(scores1, "multiClassScores")))){
+    stop("Function only available for multiClassScores objects")
+  }
+  
+  if (mcGet(scores1, "tag") != mcGet(scores2, "tag")){
+    stop("Predictions should be made over the same datasets. Invalid resample_tag.")
+  }
+  
+  if ((mcGet(scores1, "score_type") == mcGet(scores2, "score_type")) & (mcGet(scores1, "score_type") == "log_score")){
+    result <- compareModelScores_logScore(scores1, scores2)
+  } else {
+    stop("Currently only implemented for 'log_score' type")
+  }
+  
+  return(result)
+  
+}
+
+#' @export
+compareModelScores_logScore <- function(scores1, scores2){
+  
+  library(ggplot2)
+  
+  scores_cum_sum <- cumsum(unlist(mcGet(scores1, "scores_list")) - unlist(mcGet(scores2, "scores_list")))
+  
+  data <- data.frame(index = 1:length(scores_cum_sum), score_cum_sum = scores_cum_sum)
+  
+  plot <- ggplot(data) + geom_line(aes(x = index, y = score_cum_sum)) + geom_hline(yintercept = 0)
+  
+  result <- list(plot = plot, scores_cum_sum = scores_cum_sum)
+  return(result)
+  
+}
+
