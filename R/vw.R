@@ -13,6 +13,7 @@
 #' @param learning_rate Learning rate used in the OGD. 
 #' @param bits Number of bits in the feature table.
 RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_features = NULL,
+                     quadratic_features = NULL, cubic_features = NULL,
                      regressor_file = NULL, readable_model = FALSE, invert_hash = FALSE,
                      holdout = FALSE, cache_file = NULL, number_of_passes = 1, learning_rate = NULL,
                      bits = 18, l1 = NULL, rerun_l1 = FALSE){
@@ -42,6 +43,16 @@ RvwTrain <- function(data_train_path, loss_function = c("logistic"), ignore_feat
   if (!is.null(cache_file)){
     args_vector <- c(args_vector, paste("--cache_file ", cache_file, sep = ""))
     cache_activated <- TRUE
+  }
+
+  # use quadratic features
+  if (!is.null(quadratic_features)){
+    args_vector <- c(args_vector, paste("-q", quadratic_features))
+  }
+  
+  # use cubic features
+  if (!is.null(cubic_features)){
+    args_vector <- c(args_vector, paste("--cubic", cubic_features))
   }
   
   # number of passes
